@@ -95,6 +95,10 @@ ProduktPlot::ProduktPlot(const std::vector<Produkt>& produkte, QWidget *parent) 
 		bool vernichtet = false;
 		
 		for ( const auto& position : produkt.Positionen ) {
+			if ( position.Wann == -1 ) {
+				break;
+			} //if ( position.Wann == -1 )
+			
 			auto update = [&](const ProduktStatus status) {
 					const auto wann = position.Wann - offset;
 					
