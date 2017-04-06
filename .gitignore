@@ -27,3 +27,10 @@
 *.exe
 *.out
 *.app
+*.pro.user
+rs
+recordings
+build-evaluate-Qt_5_6_2_in_PATH_System-Release/
+eval/qcustomplot/examples/build-plot-examples-Qt_5_6_2_in_PATH_System-Debug/
+eval/evaluate
+planer/analyze
