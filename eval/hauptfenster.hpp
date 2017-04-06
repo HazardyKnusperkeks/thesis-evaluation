@@ -9,6 +9,7 @@
 class QHBoxLayout;
 class QLineEdit;
 class QScrollArea;
+class QTimer;
 
 class EncodingFenster;
 
@@ -22,6 +23,8 @@ class Hauptfenster : public QTabWidget {
 	QHBoxLayout *EncodingLayout;
 	QScrollArea *ScrollWidget;
 	
+	QTimer *UpdateTimer;
+	
 	void fuegeHauptTabHinzu(void);
 	
 	void setzePfad(const QString& pfad);
@@ -30,6 +33,8 @@ class Hauptfenster : public QTabWidget {
 	void entferneEncoding(const QString& encoding);
 	
 	//slots:
+	void update(void);
+	
 	void neuerTab(void);
 	void schliesseTab(const int index);
 	
