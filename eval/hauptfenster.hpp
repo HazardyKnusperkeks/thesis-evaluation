@@ -1,7 +1,7 @@
 #ifndef HAUPTFENSTER_HPP
 #define HAUPTFENSTER_HPP
 
-#include <QHash>
+#include <QMap>
 #include <QTabWidget>
 
 #include <vector>
@@ -16,7 +16,7 @@ class EncodingFenster;
 class Hauptfenster : public QTabWidget {
 	Q_OBJECT
 	private:
-	QHash<QString, EncodingFenster*> Encodings;
+	QMap<QString, EncodingFenster*> Encodings;
 	
 	QWidget *HauptTab;
 	QLineEdit *Pfad;
