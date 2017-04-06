@@ -204,6 +204,7 @@ int main(int argc, char *argv[]) {
 	} //if ( eingabePfad.fileName() == "debug8.log" )
 	
 	QDataStream ausgabeInfo(&ausgabeInfoDatei);
+	ausgabeInfo.setVersion(QDataStream::Qt_5_6);
 	
 	constexpr const char *robots[3] = {"Tuvok", "T'Pol", "Spock"};
 	

@@ -47,6 +47,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		
 		if ( datei.open(QIODevice::ReadOnly) ) {
 			QDataStream stream(&datei);
+			stream.setVersion(QDataStream::Qt_5_6);
 			stream>>info;
 			info.zaehleTasks();
 			info.berechnePunkte(0);
