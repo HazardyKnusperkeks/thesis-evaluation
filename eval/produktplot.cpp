@@ -130,7 +130,7 @@ ProduktPlot::ProduktPlot(const std::vector<Produkt>& produkte, QWidget *parent) 
 			} //switch ( position.Was )
 		} //for ( const auto& position : produkt.Positionen )
 		
-		if ( !vernichtet ) {
+		if ( !vernichtet && altStatus != ProduktStatus::Nix ) {
 			auto bar = getBar(altStatus);
 			bar->addData(key, gameEnd - now);
 			if ( oldBar ) {
@@ -139,7 +139,7 @@ ProduktPlot::ProduktPlot(const std::vector<Produkt>& produkte, QWidget *parent) 
 			else {
 				bar->setBaseValue(now);
 			} //else -> if ( oldBar )
-		} //if ( !vernichtet )
+		} //if ( !vernichtet && altStatus != ProduktStatus::Nix )
 	} //for ( auto i = 0u; i < Produkte.size(); ++i )
 	
 	auto zeitTicker = QSharedPointer<QCPAxisTickerTime>::create();
