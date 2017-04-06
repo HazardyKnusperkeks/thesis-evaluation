@@ -21,6 +21,14 @@ class EncodingFenster : public QWidget {
 	std::vector<AnnotatedInfos> Daten;
 	std::vector<DatenWidget*> Widgets;
 	
+	AvgSequenz<double> Punkte;
+	AvgSequenz<double> PlanerPunkte;
+	AvgSequenz<double> PlanerPunkteNachSpiel;
+	
+	std::pair<AvgSequenz<double>, QVector<double>> OutlierPunkte;
+	std::pair<AvgSequenz<double>, QVector<double>> OutlierPlanerPunkte;
+	std::pair<AvgSequenz<double>, QVector<double>> OutlierPlanerPunkteNachSpiel;
+	
 	void leseDaten(const QString& pfad);
 	void clear(void);
 	
@@ -31,6 +39,14 @@ class EncodingFenster : public QWidget {
 	explicit EncodingFenster(const bool frei, QWidget *parent = nullptr);
 	
 	void setzePfad(const QString& pfad);
+	
+	const AvgSequenz<double>& punkte(void) const;
+	const AvgSequenz<double>& planerPunkte(void) const;
+	const AvgSequenz<double>& planerPunkteNachSpiel(void) const;
+	
+	const std::pair<AvgSequenz<double>, QVector<double>>& outlierPunkte(void) const;
+	const std::pair<AvgSequenz<double>, QVector<double>>& outlierPlanerPunkte(void) const;
+	const std::pair<AvgSequenz<double>, QVector<double>>& outlierPlanerPunkteNachSpiel(void) const;
 };
 
 #endif

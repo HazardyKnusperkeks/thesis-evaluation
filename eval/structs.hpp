@@ -58,7 +58,7 @@ inline TaskTyp stringZuTyp(const std::string& task) {
 
 inline int bewertungEins(const TaskTyp typ) noexcept {
 	switch ( typ ) {
-		case TaskTyp::PrepareCS   : return  3;
+//		case TaskTyp::PrepareCS   : return  3;
 		case TaskTyp::MountCap    : return 10;
 		case TaskTyp::MountRing1  : return 10;
 		case TaskTyp::MountRing2  : return 20;
@@ -87,6 +87,10 @@ struct AnnotatedInfos : public Infos {
 	
 	std::map<TaskTyp, int> TasksInGame, TasksNachGame;
 	std::map<TaskTyp, int> TaskZeitInGame, TaskZeitNachGame;
+	
+	bool istOutlier(void) const {
+		return HatFailedTask;
+	}
 	
 	void berechnePunkte(const int bewertung) {
 		static const auto bewertungen(erzeugeBewertungen());

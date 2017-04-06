@@ -31,7 +31,14 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	          		return a.leftRef(a.indexOf('.')).toInt() < b.leftRef(b.indexOf('.')).toInt();
 	          	});
 	
-	Daten.reserve(dateien.size());
+	const auto reserve = dateien.size();
+	Daten.reserve(reserve);
+	Punkte.Sequenz.reserve(reserve);
+	PlanerPunkte.Sequenz.reserve(reserve);
+	PlanerPunkteNachSpiel.Sequenz.reserve(reserve);
+	OutlierPunkte.first.Sequenz.reserve(reserve);
+	OutlierPlanerPunkte.first.Sequenz.reserve(reserve);
+	OutlierPlanerPunkteNachSpiel.first.Sequenz.reserve(reserve);
 	
 	auto widget = new QWidget(ScrollWidget);
 	auto layout = new QGridLayout(widget);
@@ -72,7 +79,9 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		
 		Daten.emplace_back(std::move(info));
 		
-		auto widget = new DatenWidget(Daten.back());
+		auto& daten(Daten.back());
+		
+		auto widget = new DatenWidget(daten);
 		Widgets.push_back(widget);
 		layout->addWidget(widget, zeile, spalte);
 		
@@ -83,7 +92,30 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		
 		connect(widget, &DatenWidget::loescheEintrag, this, &EncodingFenster::loescheDaten);
 		connect(widget, &DatenWidget::zeigeLog,       this, &EncodingFenster::zeigeLog);
+		
+		Punkte.Sequenz.push_back(daten.Punkte);
+		PlanerPunkte.Sequenz.push_back(daten.PlanerPunkteInGame);
+		PlanerPunkteNachSpiel.Sequenz.push_back(daten.PlanerPunkteComplete);
+		
+		if ( daten.istOutlier() ) {
+			OutlierPunkte.second.push_back(daten.Punkte);
+			OutlierPlanerPunkte.second.push_back(daten.PlanerPunkteInGame);
+			OutlierPlanerPunkteNachSpiel.second.push_back(daten.PlanerPunkteComplete);
+		} //if ( daten.istOutlier() )
+		else {
+			OutlierPunkte.first.Sequenz.push_back(daten.Punkte);
+			OutlierPlanerPunkte.first.Sequenz.push_back(daten.PlanerPunkteInGame);
+			OutlierPlanerPunkteNachSpiel.first.Sequenz.push_back(daten.PlanerPunkteComplete);
+		} //else -> if ( daten.istOutlier() )
 	} //for ( const auto& dateiPfad : dateien )
+	
+	Punkte.calc();
+	PlanerPunkte.calc();
+	PlanerPunkteNachSpiel.calc();
+	
+	OutlierPunkte.first.calc();
+	OutlierPlanerPunkte.first.calc();
+	OutlierPlanerPunkteNachSpiel.first.calc();
 	
 	ScrollWidget->setWidget(widget);
 	widget->show();
@@ -197,4 +229,28 @@ void EncodingFenster::setzePfad(const QString& pfad) {
 	Pfad->setText(pfad);
 	leseDaten(pfad);
 	return;
+}
+
+const AvgSequenz<double>& EncodingFenster::punkte(void) const {
+	return Punkte;
+}
+
+const AvgSequenz<double>& EncodingFenster::planerPunkte(void) const {
+	return PlanerPunkte;
+}
+
+const AvgSequenz<double>& EncodingFenster::planerPunkteNachSpiel(void) const {
+	return PlanerPunkteNachSpiel;
+}
+
+const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierPunkte(void) const {
+	return OutlierPunkte;
+}
+
+const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierPlanerPunkte(void) const {
+	return OutlierPlanerPunkte;
+}
+
+const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierPlanerPunkteNachSpiel(void) const {
+	return OutlierPlanerPunkteNachSpiel;
 }
