@@ -153,7 +153,6 @@ void EncodingFenster::loescheDaten(DatenWidget* widget) {
 		} //for ( const auto& suffix : suffixe )
 		
 		bool weiter = true;
-		auto frei = spiel;
 		auto freiString = std::move(spielString);
 		
 		do { //while ( weiter )
@@ -173,7 +172,6 @@ void EncodingFenster::loescheDaten(DatenWidget* widget) {
 					} //if ( !QFile::rename(alt, neu) )
 				} //for ( const auto& suffix : suffixe )
 				
-				frei = spiel;
 				freiString = std::move(spielString);
 			} //if ( weiter )
 		} while ( weiter );
