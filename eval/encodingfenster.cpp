@@ -70,6 +70,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 				if ( zeile.contains("OVERALL TOTAL") ) {
 					const auto pos = zeile.lastIndexOf(' ') + 1;
 					info.Punkte = zeile.mid(pos, zeile.size() - pos - 1).toInt();
+					info.berechneIstOutlier();
 					break;
 				} //if ( zeile.contains("OVERALL TOTAL") )
 			} //while ( !datei.atEnd() )
@@ -97,16 +98,16 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		PlanerPunkte.Sequenz.push_back(daten.PlanerPunkteInGame);
 		PlanerPunkteNachSpiel.Sequenz.push_back(daten.PlanerPunkteComplete);
 		
-		if ( daten.istOutlier() ) {
+		if ( daten.IstOutlier ) {
 			OutlierPunkte.second.push_back(daten.Punkte);
 			OutlierPlanerPunkte.second.push_back(daten.PlanerPunkteInGame);
 			OutlierPlanerPunkteNachSpiel.second.push_back(daten.PlanerPunkteComplete);
-		} //if ( daten.istOutlier() )
+		} //if ( daten.IstOutlier )
 		else {
 			OutlierPunkte.first.Sequenz.push_back(daten.Punkte);
 			OutlierPlanerPunkte.first.Sequenz.push_back(daten.PlanerPunkteInGame);
 			OutlierPlanerPunkteNachSpiel.first.Sequenz.push_back(daten.PlanerPunkteComplete);
-		} //else -> if ( daten.istOutlier() )
+		} //else -> if ( daten.IstOutlier )
 	} //for ( const auto& dateiPfad : dateien )
 	
 	Punkte.calc();

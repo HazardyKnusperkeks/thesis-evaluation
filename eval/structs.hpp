@@ -83,13 +83,40 @@ struct AnnotatedInfos : public Infos {
 	int PlanerPunkteInGame = 0;
 	int PlanerPunkteComplete = 0;
 	bool HatFailedTask = false;
+	bool IstOutlier = false;
 	QPixmap Memory;
 	
 	std::map<TaskTyp, int> TasksInGame, TasksNachGame;
 	std::map<TaskTyp, int> TaskZeitInGame, TaskZeitNachGame;
 	
-	bool istOutlier(void) const {
-		return HatFailedTask;
+	void berechneIstOutlier(void) {
+		if ( Punkte <= 4 ) {
+			IstOutlier = true;
+			return;
+		} //if ( Punkte <= 4 )
+		
+		constexpr auto spielEnde = 900 + 240;
+		for ( const auto& paar : AusgefuehrterPlan ) {
+			auto iter = paar.second.begin();
+			const auto begin = iter;
+			const auto end = std::find_if(iter, paar.second.end(),
+				[](const auto& task) { return task.End >= spielEnde; });
+			for ( ; iter != end; ++iter ) {
+				if ( iter->Failed ) {
+					const auto iter2 = std::find_if(iter, end,
+						[iter](const auto& task) { return !task.Failed && stringZuTyp(task.Name) == stringZuTyp(iter->Name); });
+					if ( iter2 == end ) {
+						IstOutlier = true;
+						return;
+					} //if ( iter2 == end )
+				} //if ( iter->Failed )
+				else if ( iter != begin && iter->End - iter->Begin >= 210 ) {
+					IstOutlier = true;
+					return;
+				} //else if ( iter != begin && iter->End - iter->Begin >= 210 )
+			} //for ( ; iter != end; ++iter )
+		} //for ( const auto& paar : AusgefuehrterPlan )
+		return;
 	}
 	
 	void berechnePunkte(const int bewertung) {
