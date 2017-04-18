@@ -53,21 +53,29 @@ DatenWidget::DatenWidget(const AnnotatedInfos& info, QWidget *parent) : QFrame(p
 	
 	connect(logKnopf, &QPushButton::clicked, this, [this](void) noexcept { emit zeigeLog(this); return; });
 	
+	auto outlierLabel = new QLabel(Info.IstOutlier ? "Ist ein Outlier" : "", this);
+	outlierLabel->setPalette(palette);
+	
+	auto failLabel = new QLabel(Info.HatFailedTask ? "Min 1 Task failed" : "", this);
+	failLabel->setPalette(palette);
+	
 	auto layout = new QGridLayout(this);
 	layout->addWidget(spielLabel,                           0, 0, 1, -1, Qt::AlignCenter);
 	layout->addWidget(new QLabel("Punkte:", this),          1, 0);
 	layout->addWidget(Punkte,                               1, 1);
 	layout->addWidget(new QLabel("Pl. Punkte:", this),      2, 0);
 	layout->addWidget(PlanerPunkte,                         2, 1);
+	layout->addWidget(outlierLabel,                         2, 2);
 	layout->addWidget(new QLabel("Pl. Punkte Com.:", this), 3, 0);
 	layout->addWidget(PlanerPunkteComplete,                 3, 1);
+	layout->addWidget(failLabel,                            3, 2);
 	layout->addWidget(memoryLabel,                          4, 0, 1, -1);
 	layout->addWidget(roboterPlot,                          5, 0, 1, -1);
 	layout->addWidget(produktPlot,                          6, 0, 1, -1);
 	
-	layout->addWidget(loeschenKnopf,                        1, 2);
-	layout->addWidget(fehlerLabel,                          2, 2);
-	layout->addWidget(logKnopf,                             3, 2);
+	layout->addWidget(loeschenKnopf,                        1, 3);
+	layout->addWidget(fehlerLabel,                          2, 3);
+	layout->addWidget(logKnopf,                             3, 3);
 	
 	setFrameShape(QFrame::Box);
 	return;
