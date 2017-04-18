@@ -97,7 +97,7 @@ void Hauptfenster::update(void) {
 	auto planerPunkteCompletePlot  = new QCPStatisticalBox(punkteGraph->xAxis, punkteGraph->yAxis);
 	
 	punktePlot->setBrush(Qt::green);
-	planerPunktePlot->setBrush(Qt::blue);
+	planerPunktePlot->setBrush(Qt::yellow);
 	planerPunkteCompletePlot->setBrush(Qt::red);
 	
 	auto outlierPunkteGraph = new QCustomPlot(parentWidget);
@@ -106,7 +106,7 @@ void Hauptfenster::update(void) {
 	auto outlierPlanerPunkteCompletePlot  = new QCPStatisticalBox(outlierPunkteGraph->xAxis, outlierPunkteGraph->yAxis);
 	
 	outlierPunktePlot->setBrush(Qt::green);
-	outlierPlanerPunktePlot->setBrush(Qt::blue);
+	outlierPlanerPunktePlot->setBrush(Qt::yellow);
 	outlierPlanerPunkteCompletePlot->setBrush(Qt::red);
 	
 	auto graphen = {punkteGraph, outlierPunkteGraph};
