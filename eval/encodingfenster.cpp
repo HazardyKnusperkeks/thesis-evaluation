@@ -8,7 +8,9 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QFont>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
@@ -42,7 +44,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	
 	auto widget = new QWidget(ScrollWidget);
 	auto layout = new QGridLayout(widget);
-	int spalte = 0, zeile = 0;
+	int spalte = 0, zeile = 1;
 	constexpr int maxSpalten = 10;
 	
 	int spiel = 0;
@@ -118,6 +120,48 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	OutlierPlanerPunkte.first.calc();
 	OutlierPlanerPunkteNachSpiel.first.calc();
 	
+	auto zusammenFassung = new QGridLayout;
+	
+	QFont font;
+	font.setBold(true);
+	
+	spalte = 0;
+	for ( const auto str : {"Anz", "Sum", "Min", "Max", "Avg", "Abw", "1.Q", "2.Q", "3.Q"} ) {
+		auto label = new QLabel(str, widget);
+		label->setFont(font);
+		zusammenFassung->addWidget(label, 0, ++spalte);
+	} //for ( const auto str : {"Anz", "Sum", "Min", "Max", "Avg", "Abw", "1.Q", "2.Q", "3.Q"} )
+	zusammenFassung->setColumnStretch(++spalte, 1);
+	
+	zeile = 1;
+	auto fuegeZeileHinzu = [&zeile,&zusammenFassung,&font,&widget](const char *str, const AvgSequenz<double>& seq) {
+			auto label = new QLabel(str, widget);
+			label->setFont(font);
+			zusammenFassung->addWidget(label, zeile, 0);
+			
+			int spalte = 0;
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.Sequenz.size()), widget), zeile, ++spalte);
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.Summe),          widget), zeile, ++spalte);
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.Min),            widget), zeile, ++spalte);
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.Max),            widget), zeile, ++spalte);
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.Avg),            widget), zeile, ++spalte);
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.StdAbw),         widget), zeile, ++spalte);
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.ErstesQuartil),  widget), zeile, ++spalte);
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.ZweitesQuartil), widget), zeile, ++spalte);
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.DrittesQuartil), widget), zeile, ++spalte);
+			
+			++zeile;
+			return;
+		};
+	
+	fuegeZeileHinzu("Punkte:",              Punkte);
+	fuegeZeileHinzu("Pl. Punkte:",          PlanerPunkte);
+	fuegeZeileHinzu("Pl. Punkte Gesamt:",   PlanerPunkteNachSpiel);
+	fuegeZeileHinzu("O Punkte:",            OutlierPunkte.first);
+	fuegeZeileHinzu("O Pl. Punkte:",        OutlierPlanerPunkte.first);
+	fuegeZeileHinzu("O Pl. Punkte Gesamt:", OutlierPlanerPunkteNachSpiel.first);
+	
+	layout->addLayout(zusammenFassung, 0, 0, 1, -1);
 	ScrollWidget->setWidget(widget);
 	widget->show();
 	
