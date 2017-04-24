@@ -193,7 +193,7 @@ struct AnnotatedInfos : public Infos {
 							typ = TaskTyp::UselessGoto;
 							break;
 						} //if ( stringZuTyp(nextTask.Name) == TaskTyp::Goto || task.location() != nextTask.location() )
-						//fall-trough
+						break;
 					} //case TaskTyp::Goto
 					default : break;
 				} //switch ( typ )
