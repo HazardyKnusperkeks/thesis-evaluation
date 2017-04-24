@@ -100,15 +100,21 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		PlanerPunkte.Sequenz.push_back(daten.PlanerPunkteInGame);
 		PlanerPunkteNachSpiel.Sequenz.push_back(daten.PlanerPunkteComplete);
 		
+		Idle.Sequenz.push_back(daten.Idle);
+		
 		if ( daten.IstOutlier ) {
 			OutlierPunkte.second.push_back(daten.Punkte);
 			OutlierPlanerPunkte.second.push_back(daten.PlanerPunkteInGame);
 			OutlierPlanerPunkteNachSpiel.second.push_back(daten.PlanerPunkteComplete);
+			
+			OutlierIdle.second.push_back(daten.Idle);
 		} //if ( daten.IstOutlier )
 		else {
 			OutlierPunkte.first.Sequenz.push_back(daten.Punkte);
 			OutlierPlanerPunkte.first.Sequenz.push_back(daten.PlanerPunkteInGame);
 			OutlierPlanerPunkteNachSpiel.first.Sequenz.push_back(daten.PlanerPunkteComplete);
+			
+			OutlierIdle.first.Sequenz.push_back(daten.Idle);
 		} //else -> if ( daten.IstOutlier )
 	} //for ( const auto& dateiPfad : dateien )
 	
@@ -119,6 +125,9 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	OutlierPunkte.first.calc();
 	OutlierPlanerPunkte.first.calc();
 	OutlierPlanerPunkteNachSpiel.first.calc();
+	
+	Idle.calc();
+	OutlierIdle.first.calc();
 	
 	auto zusammenFassung = new QGridLayout;
 	
@@ -297,3 +306,12 @@ const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierPl
 const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierPlanerPunkteNachSpiel(void) const {
 	return OutlierPlanerPunkteNachSpiel;
 }
+
+const AvgSequenz<double>& EncodingFenster::idle(void) const {
+	return Idle;
+}
+
+const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierIdle(void) const {
+	return OutlierIdle;
+}
+

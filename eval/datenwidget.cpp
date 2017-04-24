@@ -69,9 +69,11 @@ DatenWidget::DatenWidget(const AnnotatedInfos& info, QWidget *parent) : QFrame(p
 	layout->addWidget(new QLabel("Pl. Punkte Com.:", this), 3, 0);
 	layout->addWidget(PlanerPunkteComplete,                 3, 1);
 	layout->addWidget(failLabel,                            3, 2);
-	layout->addWidget(memoryLabel,                          4, 0, 1, -1);
-	layout->addWidget(roboterPlot,                          5, 0, 1, -1);
-	layout->addWidget(produktPlot,                          6, 0, 1, -1);
+	layout->addWidget(new QLabel("Idle:", this),            4, 0);
+	layout->addWidget(new QLabel(QString::number(Info.Idle), this), 4, 1);
+	layout->addWidget(memoryLabel,                          5, 0, 1, -1);
+	layout->addWidget(roboterPlot,                          6, 0, 1, -1);
+	layout->addWidget(produktPlot,                          7, 0, 1, -1);
 	
 	layout->addWidget(loeschenKnopf,                        1, 3);
 	layout->addWidget(fehlerLabel,                          2, 3);

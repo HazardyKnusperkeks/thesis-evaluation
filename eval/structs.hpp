@@ -85,6 +85,7 @@ struct AnnotatedInfos : public Infos {
 	bool HatFailedTask = false;
 	bool IstOutlier = false;
 	QPixmap Memory;
+	int Idle = 0;
 	
 	std::map<TaskTyp, int> TasksInGame, TasksNachGame;
 	std::map<TaskTyp, int> TaskZeitInGame, TaskZeitNachGame;
@@ -142,11 +143,15 @@ struct AnnotatedInfos : public Infos {
 		TaskZeitInGame.clear();
 		TaskZeitNachGame.clear();
 		
-		constexpr auto ende = 900 + 240;
+		Idle = 0;
+		
+		constexpr const auto start = 240, ende = 900 + start;
 		
 		for ( const auto& paar : AusgefuehrterPlan ) {
 			auto *tasks = &TasksInGame;
 			auto *taskZeit = &TaskZeitInGame;
+			
+			auto now = start;
 			
 			const auto end = paar.second.end();
 			for ( auto iter = paar.second.begin(); iter != end; ++iter ) {
@@ -156,10 +161,10 @@ struct AnnotatedInfos : public Infos {
 					HatFailedTask = true;
 				} //if ( task.Failed )
 				
-				if ( task.End >= ende ) {
+				if ( task.Begin >= ende ) {
 					tasks = &TasksNachGame;
 					taskZeit = &TaskZeitNachGame;
-				} //if ( task.End >= ende )
+				} //if ( task.Begin >= ende )
 				
 				auto typ = stringZuTyp(task.Name);
 				
@@ -202,7 +207,20 @@ struct AnnotatedInfos : public Infos {
 				
 				++(*tasks)[typ];
 				(*taskZeit)[typ] += zeit;
+				
+				if ( task.Begin <= ende ) {
+					// != anstelle von > weil bei den ersten paar alten Spielen noch nicht alle Zeiten von der Exec übernommen wurden
+					// Dies führt zu ein paar Sekunden "idle" zwischen den Tasks, aber z.T. auch "negative idle", dies sollte das ausgleichen
+					if ( task.Begin != now ) {
+						Idle += task.Begin - now;
+					} //if ( task.Begin != now )
+					now = task.End;
+				} //if ( task.Begin <= ende )
 			} //for ( auto iter = paar.second.begin(); iter != end; ++iter )
+			
+			if ( now < ende ) {
+				Idle += ende - now;
+			} //if ( now < ende )
 		} //for ( const auto& paar : AusgefuehrterPlan )
 		return;
 	}

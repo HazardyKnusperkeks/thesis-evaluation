@@ -115,18 +115,25 @@ void Hauptfenster::update(void) {
 	auto nurPktPlot = new QCPStatisticalBox(nurPktGraph->xAxis, nurPktGraph->yAxis);
 	nurPktPlot->setBrush(Qt::green);
 	
+	auto idleGraph = new QCustomPlot(parentWidget);
+	auto idlePlot = new QCPStatisticalBox(idleGraph->xAxis, idleGraph->yAxis);
+	idlePlot->setBrush(QColor(255, 128, 0)); //orange
 	
+	auto outlierIdleGraph = new QCustomPlot(parentWidget);
+	auto outlierIdlePlot = new QCPStatisticalBox(outlierIdleGraph->xAxis, outlierIdleGraph->yAxis);
+	outlierIdlePlot->setBrush(QColor(255, 128, 0)); //orange
 	
-	auto graphen1 = {nurPktGraph};
+	auto graphen1 = {nurPktGraph, idleGraph, outlierIdleGraph};
 	auto graphen3 = {punkteGraph, outlierPunkteGraph};
 	auto graphen = {graphen1, graphen3};
 	
 	auto pktGraphen = {punkteGraph, outlierPunkteGraph, nurPktGraph};
+	auto idleGraphen = {idleGraph, outlierIdleGraph};
 	
 	auto encodingTicker1 = QSharedPointer<QCPAxisTickerText>::create();
 	auto encodingTicker3 = QSharedPointer<QCPAxisTickerText>::create();
 	
-	double index1 = 1., index3 = 2., pktMax = 0.;
+	double index1 = 1., index3 = 2., pktMax = 0., idleMax = 0.;
 	
 	for ( auto& graph : graphen1 ) {
 		graph->xAxis->setRange(.5, Encodings.size() + .5);
@@ -175,11 +182,23 @@ void Hauptfenster::update(void) {
 		
 		const auto& outlierPlanerPunkteComplete = encoding->outlierPlanerPunkteNachSpiel();
 		outlierPlanerPunkteCompletePlot->addData(index3 + .75, outlierPlanerPunkteComplete.first.Min, outlierPlanerPunkteComplete.first.ErstesQuartil, outlierPlanerPunkteComplete.first.ZweitesQuartil, outlierPlanerPunkteComplete.first.DrittesQuartil, outlierPlanerPunkteComplete.first.Max, outlierPlanerPunkteComplete.second);
+		
+		const auto& idle = encoding->idle();
+		idlePlot->addData(index1, idle.Min, idle.ErstesQuartil, idle.ZweitesQuartil, idle.DrittesQuartil, idle.Max);
+		
+		const auto& outlierIdle = encoding->outlierIdle();
+		outlierIdlePlot->addData(index1, outlierIdle.first.Min, outlierIdle.first.ErstesQuartil, outlierIdle.first.ZweitesQuartil, outlierIdle.first.DrittesQuartil, outlierIdle.first.Max, outlierIdle.second);
+		
+		idleMax = std::max({idleMax, idle.Max, outlierIdle.first.Max});
 	} //for ( auto iter = Encodings.begin(); iter != Encodings.end(); ++iter )
 	
 	for ( auto& graph : pktGraphen ) {
 		graph->yAxis->setRange(0., pktMax);
 	} //for ( auto& graph : pktGraphen )
+	
+	for ( auto& graph : idleGraphen ) {
+		graph->yAxis->setRange(0., idleMax);
+	} //for ( auto& graph : idleGraphen )
 	
 	auto layout = new QGridLayout(parentWidget);
 	int zeile = -1;
