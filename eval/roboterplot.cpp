@@ -33,7 +33,7 @@ QCPBars* RoboterPlot::generateBar(const TaskTyp typ, const bool mitName, const b
 	
 	ret->setAntialiased(false);
 	ret->setBrush(brush);
-	ret->setPen(QPen(brush.color().lighter()));
+	ret->setPen(QPen(Qt::black, .25));
 	ret->setWidth(.9);
 	
 	if ( mitName ) {

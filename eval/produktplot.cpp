@@ -37,7 +37,7 @@ QCPBars* ProduktPlot::generateBar(const ProduktStatus status, const bool mitName
 	
 	ret->setAntialiased(false);
 	ret->setBrush(brush);
-	ret->setPen(QPen(brush.color().lighter()));
+	ret->setPen(QPen(Qt::black, .25));
 	ret->setWidth(.9);
 	
 	if ( mitName ) {
