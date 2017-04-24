@@ -8,18 +8,18 @@ QCPBars* RoboterPlot::generateBar(const TaskTyp typ, const bool mitName, const b
 		[](void) {
 			std::unordered_map<TaskTyp, QBrush> ret;
 			ret.reserve(11);
-			//Values got from http://colorbrewer2.org/#type=diverging&scheme=Spectral&n=11
-			ret.insert({TaskTyp::UselessGoto, QColor(158,   1,  66)});
-			ret.insert({TaskTyp::Idle,        QColor(213,  62,  79)});
-			ret.insert({TaskTyp::LateDeliver, QColor(244, 109,  67)});
-			ret.insert({TaskTyp::FillRS,      QColor(253, 174,  97)});
-			ret.insert({TaskTyp::PrepareCS,   QColor(254, 224, 139)});
-			ret.insert({TaskTyp::GetBase,     QColor(255, 255, 191)});
-			ret.insert({TaskTyp::Goto,        QColor(230, 245, 152)});
-			ret.insert({TaskTyp::GetProduct,  QColor(171, 221, 164)});
-			ret.insert({TaskTyp::MountCap,    QColor(102, 194, 165)});
-			ret.insert({TaskTyp::MountRing,   QColor( 50, 136, 189)});
-			ret.insert({TaskTyp::Deliver,     QColor( 94,  79, 162)});
+			//Values got from http://colorbrewer2.org/#type=diverging&scheme=RdBu&n=11
+			ret.insert({TaskTyp::UselessGoto, QColor(103,   0,  31)});
+			ret.insert({TaskTyp::Idle,        QColor(178,  24,  43)});
+			ret.insert({TaskTyp::LateDeliver, QColor(214,  96,  77)});
+			ret.insert({TaskTyp::FillRS,      QColor(244, 165, 130)});
+			ret.insert({TaskTyp::PrepareCS,   QColor(253, 219, 199)});
+			ret.insert({TaskTyp::GetBase,     QColor(247, 247, 247)});
+			ret.insert({TaskTyp::Goto,        QColor(209, 229, 240)});
+			ret.insert({TaskTyp::GetProduct,  QColor(146, 197, 222)});
+			ret.insert({TaskTyp::MountCap,    QColor( 67, 147, 195)});
+			ret.insert({TaskTyp::MountRing,   QColor( 33, 102, 172)});
+			ret.insert({TaskTyp::Deliver,     QColor(  5,  48,  97)});
 			return ret;
 		}();
 	
