@@ -24,9 +24,9 @@ void Hauptfenster::fuegeHauptTabHinzu(void) {
 void Hauptfenster::setzePfad(const QString& pfad) {
 	Pfad->setText(pfad);
 	
-	while ( !Encodings.isEmpty() ) {
-		entferneEncoding(*Encodings.keyBegin());
-	} //while ( !Encodings.isEmpty() )
+	while ( !Encodings.empty() ) {
+		entferneEncoding(Encodings.front().first);
+	} //while ( !Encodings.empty() )
 	
 	while ( EncodingLayout->count() ) {
 		auto item = EncodingLayout->takeAt(0);
@@ -71,14 +71,16 @@ void Hauptfenster::setzePfad(const QString& pfad) {
 void Hauptfenster::fuegeEncodingHinzu(const QString& encoding) {
 	auto fenster = new EncodingFenster(false);
 	fenster->setzePfad(Pfad->text() + QDir::separator() + encoding);
-	Encodings.insert(encoding, fenster);
+	Encodings.push_back({encoding, fenster});
 	addTab(fenster, encoding);
 	UpdateTimer->start();
 	return;
 }
 
 void Hauptfenster::entferneEncoding(const QString& encoding) {
-	auto fenster = Encodings.take(encoding);
+	auto iter = std::find_if(Encodings.begin(), Encodings.end(), [&encoding](const auto& paar) noexcept { return paar.first == encoding; });
+	auto fenster = iter->second;
+	Encodings.erase(iter);
 	int index = 0;
 	for ( ; fenster != widget(index); ++index ) { }
 	removeTab(index);
@@ -109,54 +111,86 @@ void Hauptfenster::update(void) {
 	outlierPlanerPunktePlot->setBrush(Qt::yellow);
 	outlierPlanerPunkteCompletePlot->setBrush(Qt::red);
 	
-	auto graphen = {punkteGraph, outlierPunkteGraph};
+	auto nurPktGraph = new QCustomPlot(parentWidget);
+	auto nurPktPlot = new QCPStatisticalBox(nurPktGraph->xAxis, nurPktGraph->yAxis);
+	nurPktPlot->setBrush(Qt::green);
 	
-	auto encodingTicker = QSharedPointer<QCPAxisTickerText>::create();
 	
-	double index = 2., max = 0.;
 	
-	for ( auto& graph : graphen ) {
+	auto graphen1 = {nurPktGraph};
+	auto graphen3 = {punkteGraph, outlierPunkteGraph};
+	auto graphen = {graphen1, graphen3};
+	
+	auto pktGraphen = {punkteGraph, outlierPunkteGraph, nurPktGraph};
+	
+	auto encodingTicker1 = QSharedPointer<QCPAxisTickerText>::create();
+	auto encodingTicker3 = QSharedPointer<QCPAxisTickerText>::create();
+	
+	double index1 = 1., index3 = 2., pktMax = 0.;
+	
+	for ( auto& graph : graphen1 ) {
+		graph->xAxis->setRange(.5, Encodings.size() + .5);
+		graph->xAxis->setTicker(encodingTicker1);
+		
+		graph->setMinimumSize(110 * Encodings.size(), 480);
+	} //for ( auto& graph : graphen1 )
+	
+	for ( auto& graph : graphen3 ) {
 		graph->xAxis->setRange(.5, 3. * Encodings.size());
-		graph->xAxis->setSubTicks(false);
-		graph->xAxis->setTicker(encodingTicker);
-		graph->xAxis->setTickLength(0, 0);
+		graph->xAxis->setTicker(encodingTicker3);
 		
-		graph->setMinimumSize(320 * Encodings.size(), 480);
-	} //for ( auto& graph : graphen )
+		graph->setMinimumSize(330 * Encodings.size(), 480);
+	} //for ( auto& graph : graphen3 )
 	
-	for ( auto iter = Encodings.begin(); iter != Encodings.end(); ++iter, index += 3. ) {
-		encodingTicker->addTick(index, iter.key());
+	for ( auto& list : graphen ) {
+		for ( auto& graph : list ) {
+			graph->xAxis->setSubTicks(false);
+			graph->xAxis->setTickLength(0, 0);
+		} //for ( auto& graph : list )
+	} //for ( auto& list : graphen )
+	
+	for ( auto iter = Encodings.begin(); iter != Encodings.end(); ++iter, index1 += 1., index3 += 3. ) {
+		encodingTicker1->addTick(index1, iter->first);
+		encodingTicker3->addTick(index3, iter->first);
 		
-		auto encoding = iter.value();
+		auto encoding = iter->second;
 		
 		const auto& punkte = encoding->punkte();
-		punktePlot->addData(index - .75, punkte.Min, punkte.ErstesQuartil, punkte.ZweitesQuartil, punkte.DrittesQuartil, punkte.Max);
+		punktePlot->addData(index3 - .75, punkte.Min, punkte.ErstesQuartil, punkte.ZweitesQuartil, punkte.DrittesQuartil, punkte.Max);
+		nurPktPlot->addData(index1, punkte.Min, punkte.ErstesQuartil, punkte.ZweitesQuartil, punkte.DrittesQuartil, punkte.Max);
 		
 		const auto& planerPunkte = encoding->planerPunkte();
-		planerPunktePlot->addData(index, planerPunkte.Min, planerPunkte.ErstesQuartil, planerPunkte.ZweitesQuartil, planerPunkte.DrittesQuartil, planerPunkte.Max);
+		planerPunktePlot->addData(index3, planerPunkte.Min, planerPunkte.ErstesQuartil, planerPunkte.ZweitesQuartil, planerPunkte.DrittesQuartil, planerPunkte.Max);
 		
 		const auto& planerPunkteComplete = encoding->planerPunkteNachSpiel();
-		planerPunkteCompletePlot->addData(index + .75, planerPunkteComplete.Min, planerPunkteComplete.ErstesQuartil, planerPunkteComplete.ZweitesQuartil, planerPunkteComplete.DrittesQuartil, planerPunkteComplete.Max);
+		planerPunkteCompletePlot->addData(index3 + .75, planerPunkteComplete.Min, planerPunkteComplete.ErstesQuartil, planerPunkteComplete.ZweitesQuartil, planerPunkteComplete.DrittesQuartil, planerPunkteComplete.Max);
 		
-		max = std::max({max, punkte.Max, planerPunkte.Max, planerPunkteComplete.Max});
+		pktMax = std::max({pktMax, punkte.Max, planerPunkte.Max, planerPunkteComplete.Max});
 		
 		const auto& outlierPunkte = encoding->outlierPunkte();
-		outlierPunktePlot->addData(index - .75, outlierPunkte.first.Min, outlierPunkte.first.ErstesQuartil, outlierPunkte.first.ZweitesQuartil, outlierPunkte.first.DrittesQuartil, outlierPunkte.first.Max, outlierPunkte.second);
+		outlierPunktePlot->addData(index3 - .75, outlierPunkte.first.Min, outlierPunkte.first.ErstesQuartil, outlierPunkte.first.ZweitesQuartil, outlierPunkte.first.DrittesQuartil, outlierPunkte.first.Max, outlierPunkte.second);
 		
 		const auto& outlierPlanerPunkte = encoding->outlierPlanerPunkte();
-		outlierPlanerPunktePlot->addData(index, outlierPlanerPunkte.first.Min, outlierPlanerPunkte.first.ErstesQuartil, outlierPlanerPunkte.first.ZweitesQuartil, outlierPlanerPunkte.first.DrittesQuartil, outlierPlanerPunkte.first.Max, outlierPlanerPunkte.second);
+		outlierPlanerPunktePlot->addData(index3, outlierPlanerPunkte.first.Min, outlierPlanerPunkte.first.ErstesQuartil, outlierPlanerPunkte.first.ZweitesQuartil, outlierPlanerPunkte.first.DrittesQuartil, outlierPlanerPunkte.first.Max, outlierPlanerPunkte.second);
 		
 		const auto& outlierPlanerPunkteComplete = encoding->outlierPlanerPunkteNachSpiel();
-		outlierPlanerPunkteCompletePlot->addData(index + .75, outlierPlanerPunkteComplete.first.Min, outlierPlanerPunkteComplete.first.ErstesQuartil, outlierPlanerPunkteComplete.first.ZweitesQuartil, outlierPlanerPunkteComplete.first.DrittesQuartil, outlierPlanerPunkteComplete.first.Max, outlierPlanerPunkteComplete.second);
+		outlierPlanerPunkteCompletePlot->addData(index3 + .75, outlierPlanerPunkteComplete.first.Min, outlierPlanerPunkteComplete.first.ErstesQuartil, outlierPlanerPunkteComplete.first.ZweitesQuartil, outlierPlanerPunkteComplete.first.DrittesQuartil, outlierPlanerPunkteComplete.first.Max, outlierPlanerPunkteComplete.second);
 	} //for ( auto iter = Encodings.begin(); iter != Encodings.end(); ++iter )
 	
-	for ( auto& graph : graphen ) {
-		graph->yAxis->setRange(0., max);
-	} //for ( auto& graph : graphen )
+	for ( auto& graph : pktGraphen ) {
+		graph->yAxis->setRange(0., pktMax);
+	} //for ( auto& graph : pktGraphen )
 	
 	auto layout = new QGridLayout(parentWidget);
-	layout->addWidget(punkteGraph,        0, 0);
-	layout->addWidget(outlierPunkteGraph, 1, 0);
+	int zeile = -1;
+	for ( auto& list : graphen ) {
+		for ( auto& graph : list ) {
+			auto zeilenLayout = new QHBoxLayout;
+			layout->addLayout(zeilenLayout, ++zeile, 0);
+			zeilenLayout->addWidget(graph);
+			zeilenLayout->addStretch();
+		} //for ( auto& graph : list )
+	} //for ( auto& list : graphen )
 	
 	ScrollWidget->setWidget(parentWidget);
 	return;
