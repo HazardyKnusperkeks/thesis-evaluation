@@ -123,7 +123,11 @@ void Hauptfenster::update(void) {
 	auto outlierIdlePlot = new QCPStatisticalBox(outlierIdleGraph->xAxis, outlierIdleGraph->yAxis);
 	outlierIdlePlot->setBrush(QColor(255, 128, 0)); //orange
 	
-	auto graphen1 = {nurPktGraph, idleGraph, outlierIdleGraph};
+	auto startUpGraph = new QCustomPlot(parentWidget);
+	auto startUpPlot = new QCPStatisticalBox(startUpGraph->xAxis, startUpGraph->yAxis);
+	//startUpPlot->setBrush();
+	
+	auto graphen1 = {nurPktGraph, idleGraph, outlierIdleGraph, startUpGraph};
 	auto graphen3 = {punkteGraph, outlierPunkteGraph};
 	auto graphen = {graphen1, graphen3};
 	
@@ -133,7 +137,7 @@ void Hauptfenster::update(void) {
 	auto encodingTicker1 = QSharedPointer<QCPAxisTickerText>::create();
 	auto encodingTicker3 = QSharedPointer<QCPAxisTickerText>::create();
 	
-	double index1 = 1., index3 = 2., pktMax = 0., idleMax = 0.;
+	double index1 = 1., index3 = 2., pktMax = 0., idleMax = 0., startUpMax = 0.;
 	
 	for ( auto& graph : graphen1 ) {
 		graph->xAxis->setRange(.5, Encodings.size() + .5);
@@ -191,6 +195,10 @@ void Hauptfenster::update(void) {
 		const auto& outlierIdle = encoding->outlierIdle();
 		outlierIdlePlot->addData(index1, outlierIdle.first.Min, outlierIdle.first.ErstesQuartil, outlierIdle.first.ZweitesQuartil, outlierIdle.first.DrittesQuartil, outlierIdle.first.Max, outlierIdle.second);
 		
+		const auto& startUp = encoding->startUp();
+		startUpPlot->addData(index1, startUp.Min, startUp.ErstesQuartil, startUp.ZweitesQuartil, startUp.DrittesQuartil, startUp.Max);
+		
+		startUpMax = std::max(startUpMax, startUp.Max);
 	} //for ( auto iter = Encodings.begin(); iter != Encodings.end(); ++iter )
 	
 	for ( auto& graph : pktGraphen ) {
@@ -200,6 +208,8 @@ void Hauptfenster::update(void) {
 	for ( auto& graph : idleGraphen ) {
 		graph->yAxis->setRange(0., idleMax);
 	} //for ( auto& graph : idleGraphen )
+	
+	startUpGraph->yAxis->setRange(0., startUpMax);
 	
 	auto layout = new QGridLayout(parentWidget);
 	int zeile = -1;

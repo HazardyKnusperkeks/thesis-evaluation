@@ -32,6 +32,8 @@ class EncodingFenster : public QWidget {
 	AvgSequenz<double> Idle;
 	std::pair<AvgSequenz<double>, QVector<double>> OutlierIdle;
 	
+	AvgSequenz<double> StartUp;
+	
 	void leseDaten(const QString& pfad);
 	void clear(void);
 	
@@ -53,6 +55,8 @@ class EncodingFenster : public QWidget {
 	
 	const AvgSequenz<double>& idle(void) const;
 	const std::pair<AvgSequenz<double>, QVector<double>>& outlierIdle(void) const;
+	
+	const AvgSequenz<double>& startUp(void) const;
 };
 
 #endif

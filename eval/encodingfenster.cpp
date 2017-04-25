@@ -45,6 +45,8 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	Idle.Sequenz.reserve(reserve);
 	OutlierIdle.first.Sequenz.reserve(reserve);
 	
+	StartUp.Sequenz.reserve(reserve);
+	
 	auto widget = new QWidget(ScrollWidget);
 	auto layout = new QGridLayout(widget);
 	int spalte = 0, zeile = 1;
@@ -105,6 +107,8 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		
 		Idle.Sequenz.push_back(daten.Idle);
 		
+		StartUp.Sequenz.push_back(daten.StartUp);
+		
 		if ( daten.IstOutlier ) {
 			OutlierPunkte.second.push_back(daten.Punkte);
 			OutlierPlanerPunkte.second.push_back(daten.PlanerPunkteInGame);
@@ -131,6 +135,8 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	
 	Idle.calc();
 	OutlierIdle.first.calc();
+	
+	StartUp.calc();
 	
 	auto zusammenFassung = new QGridLayout;
 	
@@ -174,6 +180,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	fuegeZeileHinzu("O Pl. Punkte:",        OutlierPlanerPunkte.first);
 	fuegeZeileHinzu("O Pl. Punkte Gesamt:", OutlierPlanerPunkteNachSpiel.first);
 	fuegeZeileHinzu("O Idle:",              OutlierIdle.first);
+	fuegeZeileHinzu("StartUp",              StartUp);
 	
 	layout->addLayout(zusammenFassung, 0, 0, 1, -1);
 	ScrollWidget->setWidget(widget);
@@ -318,5 +325,9 @@ const AvgSequenz<double>& EncodingFenster::idle(void) const {
 
 const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierIdle(void) const {
 	return OutlierIdle;
+}
+
+const AvgSequenz<double>& EncodingFenster::startUp(void) const {
+	return StartUp;
 }
 
