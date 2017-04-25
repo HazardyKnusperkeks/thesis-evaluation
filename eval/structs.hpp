@@ -91,17 +91,19 @@ struct AnnotatedInfos : public Infos {
 	std::map<TaskTyp, int> TaskZeitInGame, TaskZeitNachGame;
 	
 	void berechneIstOutlier(void) {
-		if ( Punkte <= 4 ) {
-			IstOutlier = true;
-			return;
-		} //if ( Punkte <= 4 )
-		
 		constexpr auto spielEnde = 900 + 240;
 		for ( const auto& paar : AusgefuehrterPlan ) {
 			auto iter = paar.second.begin();
 			const auto begin = iter;
-			const auto end = std::find_if(iter, paar.second.end(),
-				[](const auto& task) { return task.End >= spielEnde; });
+			const auto end = [&](void) {
+					auto end = std::find_if(iter, paar.second.end(),
+						[](const auto& task) { return task.End >= spielEnde; });
+					if ( end != paar.second.end() ) {
+						++end;
+					} //if ( end != paar.second.end() )
+					return end;
+				}();
+			
 			for ( ; iter != end; ++iter ) {
 				if ( iter->Failed ) {
 					const auto iter2 = std::find_if(iter, end,
