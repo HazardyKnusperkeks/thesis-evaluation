@@ -186,10 +186,11 @@ void Hauptfenster::update(void) {
 		const auto& idle = encoding->idle();
 		idlePlot->addData(index1, idle.Min, idle.ErstesQuartil, idle.ZweitesQuartil, idle.DrittesQuartil, idle.Max);
 		
+		idleMax = std::max(idleMax, idle.Max);
+		
 		const auto& outlierIdle = encoding->outlierIdle();
 		outlierIdlePlot->addData(index1, outlierIdle.first.Min, outlierIdle.first.ErstesQuartil, outlierIdle.first.ZweitesQuartil, outlierIdle.first.DrittesQuartil, outlierIdle.first.Max, outlierIdle.second);
 		
-		idleMax = std::max({idleMax, idle.Max, outlierIdle.first.Max});
 	} //for ( auto iter = Encodings.begin(); iter != Encodings.end(); ++iter )
 	
 	for ( auto& graph : pktGraphen ) {

@@ -42,6 +42,9 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	OutlierPlanerPunkte.first.Sequenz.reserve(reserve);
 	OutlierPlanerPunkteNachSpiel.first.Sequenz.reserve(reserve);
 	
+	Idle.Sequenz.reserve(reserve);
+	OutlierIdle.first.Sequenz.reserve(reserve);
+	
 	auto widget = new QWidget(ScrollWidget);
 	auto layout = new QGridLayout(widget);
 	int spalte = 0, zeile = 1;
@@ -166,9 +169,11 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	fuegeZeileHinzu("Punkte:",              Punkte);
 	fuegeZeileHinzu("Pl. Punkte:",          PlanerPunkte);
 	fuegeZeileHinzu("Pl. Punkte Gesamt:",   PlanerPunkteNachSpiel);
+	fuegeZeileHinzu("Idle:",                Idle);
 	fuegeZeileHinzu("O Punkte:",            OutlierPunkte.first);
 	fuegeZeileHinzu("O Pl. Punkte:",        OutlierPlanerPunkte.first);
 	fuegeZeileHinzu("O Pl. Punkte Gesamt:", OutlierPlanerPunkteNachSpiel.first);
+	fuegeZeileHinzu("O Idle:",              OutlierIdle.first);
 	
 	layout->addLayout(zusammenFassung, 0, 0, 1, -1);
 	ScrollWidget->setWidget(widget);
