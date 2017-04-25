@@ -141,7 +141,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	for ( const auto str : {"Anz", "Sum", "Min", "Max", "Avg", "Abw", "1.Q", "2.Q", "3.Q"} ) {
 		auto label = new QLabel(str, widget);
 		label->setFont(font);
-		zusammenFassung->addWidget(label, 0, ++spalte);
+		zusammenFassung->addWidget(label, 0, ++spalte, Qt::AlignHCenter);
 	} //for ( const auto str : {"Anz", "Sum", "Min", "Max", "Avg", "Abw", "1.Q", "2.Q", "3.Q"} )
 	zusammenFassung->setColumnStretch(++spalte, 1);
 	
@@ -152,15 +152,15 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 			zusammenFassung->addWidget(label, zeile, 0);
 			
 			int spalte = 0;
-			zusammenFassung->addWidget(new QLabel(QString::number(seq.Sequenz.size()), widget), zeile, ++spalte);
-			zusammenFassung->addWidget(new QLabel(QString::number(seq.Summe),          widget), zeile, ++spalte);
-			zusammenFassung->addWidget(new QLabel(QString::number(seq.Min),            widget), zeile, ++spalte);
-			zusammenFassung->addWidget(new QLabel(QString::number(seq.Max),            widget), zeile, ++spalte);
-			zusammenFassung->addWidget(new QLabel(QString::number(seq.Avg),            widget), zeile, ++spalte);
-			zusammenFassung->addWidget(new QLabel(QString::number(seq.StdAbw),         widget), zeile, ++spalte);
-			zusammenFassung->addWidget(new QLabel(QString::number(seq.ErstesQuartil),  widget), zeile, ++spalte);
-			zusammenFassung->addWidget(new QLabel(QString::number(seq.ZweitesQuartil), widget), zeile, ++spalte);
-			zusammenFassung->addWidget(new QLabel(QString::number(seq.DrittesQuartil), widget), zeile, ++spalte);
+			zusammenFassung->addWidget(new QLabel(QString::number(seq.Sequenz.size()),              widget), zeile, ++spalte, Qt::AlignRight);
+			zusammenFassung->addWidget(new QLabel(QString("%1").arg(seq.Summe,          0, 'f', 3), widget), zeile, ++spalte, Qt::AlignRight);
+			zusammenFassung->addWidget(new QLabel(QString("%1").arg(seq.Min,            0, 'f', 3), widget), zeile, ++spalte, Qt::AlignRight);
+			zusammenFassung->addWidget(new QLabel(QString("%1").arg(seq.Max,            0, 'f', 3), widget), zeile, ++spalte, Qt::AlignRight);
+			zusammenFassung->addWidget(new QLabel(QString("%1").arg(seq.Avg,            0, 'f', 3), widget), zeile, ++spalte, Qt::AlignRight);
+			zusammenFassung->addWidget(new QLabel(QString("%1").arg(seq.StdAbw,         0, 'f', 3), widget), zeile, ++spalte, Qt::AlignRight);
+			zusammenFassung->addWidget(new QLabel(QString("%1").arg(seq.ErstesQuartil,  0, 'f', 3), widget), zeile, ++spalte, Qt::AlignRight);
+			zusammenFassung->addWidget(new QLabel(QString("%1").arg(seq.ZweitesQuartil, 0, 'f', 3), widget), zeile, ++spalte, Qt::AlignRight);
+			zusammenFassung->addWidget(new QLabel(QString("%1").arg(seq.DrittesQuartil, 0, 'f', 3), widget), zeile, ++spalte, Qt::AlignRight);
 			
 			++zeile;
 			return;
