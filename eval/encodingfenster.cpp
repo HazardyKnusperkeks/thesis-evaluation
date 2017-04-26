@@ -195,6 +195,18 @@ void EncodingFenster::clear(void) {
 	delete ScrollWidget->takeWidget();
 	Widgets.clear();
 	Daten.clear();
+	
+	Punkte.Sequenz.clear();
+	PlanerPunkte.Sequenz.clear();
+	PlanerPunkteNachSpiel.Sequenz.clear();
+	OutlierPunkte.first.Sequenz.clear();
+	OutlierPlanerPunkte.first.Sequenz.clear();
+	OutlierPlanerPunkteNachSpiel.first.Sequenz.clear();
+	
+	Idle.Sequenz.clear();
+	OutlierIdle.first.Sequenz.clear();
+	
+	StartUp.Sequenz.clear();
 	return;
 }
 
