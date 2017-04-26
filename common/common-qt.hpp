@@ -341,7 +341,7 @@ static inline QDataStream& operator<<(QDataStream& out, const AvgSequenz<T>& seq
 
 template<typename T>
 static inline QDataStream& operator>>(QDataStream& in, AvgSequenz<T>& sequenz) {
-	in>>sequenz.Sequenz>>sequenz.Summe>>sequenz.Min>>sequenz.Max>>sequenz.StdAbw>>sequenz.Avg>>sequenz.ErstesQuartil
+	in>>sequenz.Sequenz>>sequenz.Summe>>sequenz.Min>>sequenz.Max>>sequenz.Avg>>sequenz.StdAbw>>sequenz.ErstesQuartil
 	  >>sequenz.ZweitesQuartil>>sequenz.DrittesQuartil;
 	return in;
 }
