@@ -40,3 +40,8 @@ debug
 release
 object_script.*
 uic_wrapper.bat
+*.parsed
+*.log
+*.rrd
+*.png
+build-evaluate
