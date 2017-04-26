@@ -5,7 +5,8 @@ SOURCES += \
     roboterplot.cpp \
     produktplot.cpp \
     encodingfenster.cpp \
-    hauptfenster.cpp
+    hauptfenster.cpp \
+    zeitbismodellplot.cpp
 
 CONFIG += c++1z
 
@@ -22,4 +23,5 @@ HEADERS += \
     produktplot.hpp \
     ../common/common.hpp \
     encodingfenster.hpp \
-    hauptfenster.hpp
+    hauptfenster.hpp \
+    zeitbismodellplot.hpp

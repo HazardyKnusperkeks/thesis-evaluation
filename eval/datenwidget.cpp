@@ -3,6 +3,7 @@
 #include "produktplot.hpp"
 #include "roboterplot.hpp"
 #include "structs.hpp"
+#include "zeitbismodellplot.hpp"
 
 #include <QFont>
 #include <QGridLayout>
@@ -40,6 +41,9 @@ DatenWidget::DatenWidget(const AnnotatedInfos& info, QWidget *parent) : QFrame(p
 	auto produktPlot = new ProduktPlot(Info.Produkte, this);
 	produktPlot->setMinimumSize(memoryLabel->sizeHint());
 	
+	auto modellPlot = new ZeitBisModellPlot(Info.ZeitBisModell, Info.ZeitSeitModell, this);
+	modellPlot->setMinimumSize(memoryLabel->sizeHint());
+	
 	auto loeschenKnopf = new QPushButton("Löschen", this);
 	
 	connect(loeschenKnopf, &QPushButton::clicked, this, [this](void) noexcept { emit loescheEintrag(this); return; });
@@ -74,6 +78,7 @@ DatenWidget::DatenWidget(const AnnotatedInfos& info, QWidget *parent) : QFrame(p
 	layout->addWidget(memoryLabel,                          5, 0, 1, -1);
 	layout->addWidget(roboterPlot,                          6, 0, 1, -1);
 	layout->addWidget(produktPlot,                          7, 0, 1, -1);
+	layout->addWidget(modellPlot,                           8, 0, 1, -1);
 	
 	layout->addWidget(loeschenKnopf,                        1, 3);
 	layout->addWidget(fehlerLabel,                          2, 3);
