@@ -159,10 +159,6 @@ struct AnnotatedInfos : public Infos {
 			for ( auto iter = paar.second.begin(); iter != end; ++iter ) {
 				const auto& task(*iter);
 				
-				if ( task.Failed ) {
-					HatFailedTask = true;
-				} //if ( task.Failed )
-				
 				if ( task.Begin >= ende ) {
 					tasks = &TasksNachGame;
 					taskZeit = &TaskZeitNachGame;
@@ -207,8 +203,13 @@ struct AnnotatedInfos : public Infos {
 					TaskZeitNachGame[typ] += zeitNachEnde;
 				} //if ( task.End > ende && taskZeit != &TaskZeitNachGame )
 				
-				++(*tasks)[typ];
-				(*taskZeit)[typ] += zeit;
+				if ( task.Failed ) {
+					HatFailedTask = true;
+				} //if ( task.Failed )
+				else {
+					++(*tasks)[typ];
+					(*taskZeit)[typ] += zeit;
+				} //else -> if ( task.Failed )
 				
 				if ( task.Begin <= ende ) {
 					// != anstelle von > weil bei den ersten paar alten Spielen noch nicht alle Zeiten von der Exec übernommen wurden
