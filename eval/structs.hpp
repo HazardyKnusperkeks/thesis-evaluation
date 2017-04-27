@@ -212,11 +212,9 @@ struct AnnotatedInfos : public Infos {
 				} //else -> if ( task.Failed )
 				
 				if ( task.Begin <= ende ) {
-					// != anstelle von > weil bei den ersten paar alten Spielen noch nicht alle Zeiten von der Exec übernommen wurden
-					// Dies führt zu ein paar Sekunden "idle" zwischen den Tasks, aber z.T. auch "negative idle", dies sollte das ausgleichen
-					if ( task.Begin != now ) {
+					if ( task.Begin > now ) {
 						Idle += task.Begin - now;
-					} //if ( task.Begin != now )
+					} //if ( task.Begin > now )
 					now = task.End;
 				} //if ( task.Begin <= ende )
 			} //for ( auto iter = paar.second.begin(); iter != end; ++iter )
