@@ -38,10 +38,18 @@ void Hauptfenster::setzePfad(const QString& pfad) {
 	QDir verzeichnis(pfad);
 	QVector<QCheckBox*> boxes;
 	
+	auto zeile = 0, spalte = 0;
+	constexpr const auto maxSpalten = 15;
+	
 	for ( const auto& encoding : verzeichnis.entryList(QDir::Dirs | QDir::NoDotAndDotDot) ) {
 		auto box = new QCheckBox(encoding, this);
-		EncodingLayout->addWidget(box);
+		EncodingLayout->addWidget(box, zeile, spalte);
 		boxes.append(box);
+		
+		if ( ++spalte == maxSpalten ) {
+			spalte = 0;
+			++zeile;
+		} //if ( ++spalte == maxSpalten )
 		
 		connect(box, &QCheckBox::toggled, this, [this,box](const bool aktiv) {
 				if ( aktiv ) {
@@ -63,8 +71,8 @@ void Hauptfenster::setzePfad(const QString& pfad) {
 			return;
 		});
 	
-	EncodingLayout->addStretch();
-	EncodingLayout->addWidget(knopf);
+	EncodingLayout->setColumnStretch(maxSpalten, 1);
+	EncodingLayout->addWidget(knopf, 0, maxSpalten + 1);
 	return;
 }
 
@@ -115,6 +123,10 @@ void Hauptfenster::update(void) {
 	auto nurPktPlot = new QCPStatisticalBox(nurPktGraph->xAxis, nurPktGraph->yAxis);
 	nurPktPlot->setBrush(Qt::green);
 	
+	auto nurOutlierPktGraph = new QCustomPlot(parentWidget);
+	auto nurOutlierPktPlot = new QCPStatisticalBox(nurOutlierPktGraph->xAxis, nurOutlierPktGraph->yAxis);
+	nurOutlierPktPlot->setBrush(Qt::green);
+	
 	auto idleGraph = new QCustomPlot(parentWidget);
 	auto idlePlot = new QCPStatisticalBox(idleGraph->xAxis, idleGraph->yAxis);
 	idlePlot->setBrush(QColor(255, 128, 0)); //orange
@@ -127,11 +139,11 @@ void Hauptfenster::update(void) {
 	auto startUpPlot = new QCPStatisticalBox(startUpGraph->xAxis, startUpGraph->yAxis);
 	//startUpPlot->setBrush();
 	
-	auto graphen1 = {nurPktGraph, idleGraph, outlierIdleGraph, startUpGraph};
+	auto graphen1 = {nurPktGraph, nurOutlierPktGraph, idleGraph, outlierIdleGraph, startUpGraph};
 	auto graphen3 = {punkteGraph, outlierPunkteGraph};
 	auto graphen = {graphen1, graphen3};
 	
-	auto pktGraphen = {punkteGraph, outlierPunkteGraph, nurPktGraph};
+	auto pktGraphen = {punkteGraph, outlierPunkteGraph, nurPktGraph, nurOutlierPktGraph};
 	auto idleGraphen = {idleGraph, outlierIdleGraph};
 	
 	auto encodingTicker1 = QSharedPointer<QCPAxisTickerText>::create();
@@ -180,6 +192,7 @@ void Hauptfenster::update(void) {
 		
 		const auto& outlierPunkte = encoding->outlierPunkte();
 		outlierPunktePlot->addData(index3 - .75, outlierPunkte.first.Min, outlierPunkte.first.ErstesQuartil, outlierPunkte.first.ZweitesQuartil, outlierPunkte.first.DrittesQuartil, outlierPunkte.first.Max, outlierPunkte.second);
+		nurOutlierPktPlot->addData(index1, outlierPunkte.first.Min, outlierPunkte.first.ErstesQuartil, outlierPunkte.first.ZweitesQuartil, outlierPunkte.first.DrittesQuartil, outlierPunkte.first.Max, outlierPunkte.second);
 		
 		const auto& outlierPlanerPunkte = encoding->outlierPlanerPunkte();
 		outlierPlanerPunktePlot->addData(index3, outlierPlanerPunkte.first.Min, outlierPlanerPunkte.first.ErstesQuartil, outlierPlanerPunkte.first.ZweitesQuartil, outlierPlanerPunkte.first.DrittesQuartil, outlierPlanerPunkte.first.Max, outlierPlanerPunkte.second);
@@ -277,7 +290,7 @@ Hauptfenster::Hauptfenster(QWidget *parent) : QTabWidget(parent), UpdateTimer(ne
 	obenLayout->addWidget(Pfad);
 	obenLayout->addWidget(durchsuchen);
 	
-	EncodingLayout = new QHBoxLayout;
+	EncodingLayout = new QGridLayout;
 	
 	ScrollWidget = new QScrollArea(HauptTab);
 	

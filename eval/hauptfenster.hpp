@@ -5,7 +5,7 @@
 
 #include <vector>
 
-class QHBoxLayout;
+class QGridLayout;
 class QLineEdit;
 class QScrollArea;
 class QTimer;
@@ -19,7 +19,7 @@ class Hauptfenster : public QTabWidget {
 	
 	QWidget *HauptTab;
 	QLineEdit *Pfad;
-	QHBoxLayout *EncodingLayout;
+	QGridLayout *EncodingLayout;
 	QScrollArea *ScrollWidget;
 	
 	QTimer *UpdateTimer;
