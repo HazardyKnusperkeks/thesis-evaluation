@@ -113,10 +113,10 @@ struct AnnotatedInfos : public Infos {
 						return;
 					} //if ( iter2 == end )
 				} //if ( iter->Failed )
-				else if ( iter != begin && iter->End - iter->Begin >= 210 ) {
+				else if ( ( iter != begin && iter->End - iter->Begin >= 210 ) || ( iter->End - iter->Begin >= 360 ) ) {
 					IstOutlier = true;
 					return;
-				} //else if ( iter != begin && iter->End - iter->Begin >= 210 )
+				} //else if ( ( iter != begin && iter->End - iter->Begin >= 210 ) || ( iter->End - iter->Begin >= 360 ) )
 			} //for ( ; iter != end; ++iter )
 		} //for ( const auto& paar : AusgefuehrterPlan )
 		return;
