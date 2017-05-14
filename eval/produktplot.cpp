@@ -85,8 +85,6 @@ ProduktPlot::ProduktPlot(const std::vector<Produkt>& produkte, QWidget *parent) 
 	
 	constexpr int gameEnd = 900, offset = 240/*, gameEndWithOffset = gameEnd + offset*/;
 	for ( auto i = 0u; i < Produkte.size(); ++i ) {
-		QCPBars *oldBar = nullptr;
-		
 		const double key = Produkte.size() - i;
 		
 		const auto& produkt(Produkte[i]);
@@ -104,14 +102,8 @@ ProduktPlot::ProduktPlot(const std::vector<Produkt>& produkte, QWidget *parent) 
 					
 					if ( altStatus != ProduktStatus::Nix ) {
 						auto bar = getBar(altStatus);
+						bar->setBaseValue(now);
 						bar->addData(key, wann - now);
-						if ( oldBar ) {
-							bar->moveAbove(oldBar);
-						} //if ( oldBar )
-						else {
-							bar->setBaseValue(now);
-						} //else -> if ( oldBar )
-						oldBar = bar;
 					} //if ( altStatus != ProduktStatus::Nix )
 					
 					if ( status != ProduktStatus::Nix ) {
@@ -132,13 +124,8 @@ ProduktPlot::ProduktPlot(const std::vector<Produkt>& produkte, QWidget *parent) 
 		
 		if ( !vernichtet && altStatus != ProduktStatus::Nix ) {
 			auto bar = getBar(altStatus);
+			bar->setBaseValue(now);
 			bar->addData(key, gameEnd - now);
-			if ( oldBar ) {
-				bar->moveAbove(oldBar);
-			} //if ( oldBar )
-			else {
-				bar->setBaseValue(now);
-			} //else -> if ( oldBar )
 		} //if ( !vernichtet && altStatus != ProduktStatus::Nix )
 	} //for ( auto i = 0u; i < Produkte.size(); ++i )
 	

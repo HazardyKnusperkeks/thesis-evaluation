@@ -85,7 +85,6 @@ RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, 
 	constexpr int gameEnd = 900, offset = 240, gameEndWithOffset = gameEnd + offset;
 	int max = gameEnd;
 	for ( auto iter = roboterTicks.begin(); iter != roboterTicks.end(); ++iter ) {
-		QCPBars *oldBar = nullptr;
 		int now = offset;
 		
 		const auto& robotPlan(plan.at(iter->toStdString()));
@@ -107,21 +106,22 @@ RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, 
 		while ( taskIter != taskEnd ) {
 			TaskTyp typ;
 			int size;
+			const double start = now - offset;
 			bool fail = false;
 			if ( taskIter->Begin > now ) {
-				typ = TaskTyp::Idle;
+				typ  = TaskTyp::Idle;
 				size = taskIter->Begin - now;
-				now = taskIter->Begin;
+				now  = taskIter->Begin;
 			} //if ( taskIter->Begin > now )
 			else {
 				typ = stringZuTyp(taskIter->Name);
 				if ( taskIter->End == 0 ) {
 					size = 30;
-					now = taskIter->Begin + size;
+					now  = taskIter->Begin + size;
 				} //if ( taskIter->End == 0 )
 				else {
 					size = taskIter->End - now;
-					now = taskIter->End;
+					now  = taskIter->End;
 				} //else -> if ( taskIter->End == 0 )
 				fail = taskIter->Failed;
 				++taskIter;
@@ -131,19 +131,14 @@ RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, 
 				} //if ( uselessGoto(typ) )
 			} //else -> if ( taskIter->Begin > now )
 			auto bar = getBar(typ, fail);
+			bar->setBaseValue(start);
 			bar->addData(iter.key(), size);
-			
-			if ( oldBar ) {
-				bar->moveAbove(oldBar);
-			} //if ( oldBar )
-			
-			oldBar = bar;
 		} //while ( taskIter != taskEnd )
 		
 		if ( now < gameEndWithOffset ) {
 			auto bar = getBar(TaskTyp::Idle, false);
+			bar->setBaseValue(now);
 			bar->addData(iter.key(), gameEndWithOffset - now);
-			bar->moveAbove(oldBar);
 			now = gameEndWithOffset;
 		} //if ( now < gameEndWithOffset )
 		max = std::max(max, now - offset);
