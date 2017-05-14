@@ -157,14 +157,14 @@ void Hauptfenster::update(void) {
 		graph->xAxis->setRange(.5, Encodings.size() + .5);
 		graph->xAxis->setTicker(encodingTicker1);
 		
-		graph->setMinimumSize(110 * Encodings.size(), 480);
+		graph->setMinimumSize(100 * Encodings.size() + 10 * (Encodings.size() - 1) + 50, 480);
 	} //for ( auto& graph : graphen1 )
 	
 	for ( auto& graph : graphen3 ) {
 		graph->xAxis->setRange(.5, 3. * Encodings.size());
 		graph->xAxis->setTicker(encodingTicker3);
 		
-		graph->setMinimumSize(330 * Encodings.size(), 480);
+		graph->setMinimumSize(300 * Encodings.size() + 10 * (Encodings.size() - 1) + 50, 480);
 	} //for ( auto& graph : graphen3 )
 	
 	for ( auto& list : graphen ) {
