@@ -98,6 +98,8 @@ void Hauptfenster::entferneEncoding(const QString& encoding) {
 }
 
 void Hauptfenster::update(void) {
+	const auto x = ScrollWidget->horizontalScrollBar()->value();
+	const auto y = ScrollWidget->verticalScrollBar()->value();
 	delete ScrollWidget->takeWidget();
 	auto parentWidget = new QWidget;
 	
@@ -236,6 +238,8 @@ void Hauptfenster::update(void) {
 	} //for ( auto& list : graphen )
 	
 	ScrollWidget->setWidget(parentWidget);
+	ScrollWidget->horizontalScrollBar()->setValue(x);
+	ScrollWidget->verticalScrollBar()->setValue(y);
 	return;
 }
 
