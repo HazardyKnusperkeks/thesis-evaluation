@@ -37,12 +37,15 @@ DatenWidget::DatenWidget(const AnnotatedInfos& info, QWidget *parent) : QFrame(p
 	
 	auto roboterPlot = new RoboterPlot(Info.AusgefuehrterPlan, this);
 	roboterPlot->setMinimumSize(memoryLabel->sizeHint());
+	connect(roboterPlot, &RoboterPlot::mouseDoubleClick, this, [this,roboterPlot](void) { emit graphDoppelklick(roboterPlot); return; });
 	
 	auto produktPlot = new ProduktPlot(Info.Produkte, this);
 	produktPlot->setMinimumSize(memoryLabel->sizeHint());
+	connect(produktPlot, &RoboterPlot::mouseDoubleClick, this, [this,produktPlot](void) { emit graphDoppelklick(produktPlot); return; });
 	
 	auto modellPlot = new ZeitBisModellPlot(Info.ZeitBisModell, Info.ZeitSeitModell, this);
 	modellPlot->setMinimumSize(memoryLabel->sizeHint());
+	connect(modellPlot, &RoboterPlot::mouseDoubleClick, this, [this,modellPlot](void) { emit graphDoppelklick(modellPlot); return; });
 	
 	auto loeschenKnopf = new QPushButton("Löschen", this);
 	

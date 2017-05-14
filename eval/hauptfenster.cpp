@@ -1,13 +1,17 @@
 #include "hauptfenster.hpp"
 
 #include "encodingfenster.hpp"
+#include "graphdialog.hpp"
 #include "qcustomplot/qcustomplot.h"
 
 #include <QCheckBox>
+#include <QDebug>
 #include <QDir>
 #include <QFileDialog>
+#include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QMouseEvent>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QTabBar>
@@ -78,6 +82,7 @@ void Hauptfenster::setzePfad(const QString& pfad) {
 
 void Hauptfenster::fuegeEncodingHinzu(const QString& encoding) {
 	auto fenster = new EncodingFenster(false);
+	connect(fenster, &EncodingFenster::graphDoppelklick, this, &Hauptfenster::graphDoppelKlick);
 	fenster->setzePfad(Pfad->text() + QDir::separator() + encoding);
 	Encodings.push_back({encoding, fenster});
 	addTab(fenster, encoding);
@@ -171,6 +176,8 @@ void Hauptfenster::update(void) {
 		for ( auto& graph : list ) {
 			graph->xAxis->setSubTicks(false);
 			graph->xAxis->setTickLength(0, 0);
+			
+			connect(graph, &QCustomPlot::mouseDoubleClick, this, [this,graph](void) { graphDoppelKlick(graph); return; });
 		} //for ( auto& graph : list )
 	} //for ( auto& list : graphen )
 	
@@ -244,7 +251,9 @@ void Hauptfenster::update(void) {
 }
 
 void Hauptfenster::neuerTab(void) {
-	setCurrentIndex(addTab(new EncodingFenster(true), "Frei"));
+	auto fenster = new EncodingFenster(true);
+	connect(fenster, &EncodingFenster::graphDoppelklick, this, &Hauptfenster::graphDoppelKlick);
+	setCurrentIndex(addTab(fenster, "Frei"));
 	return;
 }
 
@@ -268,6 +277,22 @@ void Hauptfenster::schliesseTab(const int index) {
 	auto w = widget(index);
 	removeTab(index);
 	delete w;
+	return;
+}
+
+void Hauptfenster::graphDoppelKlick(QCustomPlot *graph) {
+	auto plot = graph->plottable();
+	if ( qobject_cast<QCPStatisticalBox*>(plot) ) {
+		StatistikGraphDialog dialog(graph, this);
+		dialog.exec();
+	} //if ( qobject_cast<QCPStatisticalBox*>(plot) )
+	else if ( qobject_cast<QCPBars*>(plot) ) {
+		BoxGraphDialog dialog(graph, this);
+		dialog.exec();
+	} //else if ( qobject_cast<QCPBars*>(plot) )
+	else {
+		qWarning()<<"Falscher Plot-Typ"<<plot;
+	} //else
 	return;
 }
 

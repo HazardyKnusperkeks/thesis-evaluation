@@ -6,7 +6,8 @@ SOURCES += \
     produktplot.cpp \
     encodingfenster.cpp \
     hauptfenster.cpp \
-    zeitbismodellplot.cpp
+    zeitbismodellplot.cpp \
+    graphdialog.cpp
 
 CONFIG += c++1z
 
@@ -24,4 +25,5 @@ HEADERS += \
     ../common/common.hpp \
     encodingfenster.hpp \
     hauptfenster.hpp \
-    zeitbismodellplot.hpp
+    zeitbismodellplot.hpp \
+    graphdialog.hpp

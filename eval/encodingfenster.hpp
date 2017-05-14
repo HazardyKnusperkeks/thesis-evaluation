@@ -12,6 +12,8 @@ class DatenWidget;
 class QLineEdit;
 class QScrollArea;
 
+class QCustomPlot;
+
 class EncodingFenster : public QWidget {
 	Q_OBJECT
 	private:
@@ -57,6 +59,9 @@ class EncodingFenster : public QWidget {
 	const std::pair<AvgSequenz<double>, QVector<double>>& outlierIdle(void) const;
 	
 	const AvgSequenz<double>& startUp(void) const;
+	
+	signals:
+	void graphDoppelklick(QCustomPlot *graph);
 };
 
 #endif

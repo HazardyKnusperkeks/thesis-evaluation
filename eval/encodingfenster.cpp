@@ -1,6 +1,7 @@
 #include "encodingfenster.hpp"
 
 #include "datenwidget.hpp"
+#include "qcustomplot/qcustomplot.h"
 
 #include <algorithm>
 
@@ -90,6 +91,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		auto& daten(Daten.back());
 		
 		auto widget = new DatenWidget(daten);
+		connect(widget, &DatenWidget::graphDoppelklick, this, &EncodingFenster::graphDoppelklick);
 		Widgets.push_back(widget);
 		layout->addWidget(widget, zeile, spalte);
 		

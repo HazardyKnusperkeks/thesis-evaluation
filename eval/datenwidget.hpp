@@ -7,6 +7,8 @@ struct AnnotatedInfos;
 
 class QLabel;
 
+class QCustomPlot;
+
 class DatenWidget : public QFrame {
 	Q_OBJECT
 	private:
@@ -26,6 +28,8 @@ class DatenWidget : public QFrame {
 	signals:
 	void loescheEintrag(DatenWidget *widget);
 	void zeigeLog(DatenWidget *widget);
+	
+	void graphDoppelklick(QCustomPlot *graph);
 };
 
 #endif

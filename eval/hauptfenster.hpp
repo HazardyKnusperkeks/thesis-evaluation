@@ -10,6 +10,8 @@ class QLineEdit;
 class QScrollArea;
 class QTimer;
 
+class QCustomPlot;
+
 class EncodingFenster;
 
 class Hauptfenster : public QTabWidget {
@@ -36,6 +38,8 @@ class Hauptfenster : public QTabWidget {
 	
 	void neuerTab(void);
 	void schliesseTab(const int index);
+	
+	void graphDoppelKlick(QCustomPlot *graph);
 	
 	public:
 	explicit Hauptfenster(QWidget *parent = nullptr);
