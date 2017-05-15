@@ -11,6 +11,52 @@
 
 #include <unordered_map>
 
+void LegendenDialog::speichereGraph(void) {
+	const auto pfad = QFileDialog::getSaveFileName(this, "Speichere Graph", QString(), "*.pdf");
+	if ( pfad.isEmpty() ) {
+		return;
+	} //if ( pfad.isEmpty() )
+	
+	Graph->savePdf(pfad);
+	return;
+}
+
+LegendenDialog::LegendenDialog(QCustomPlot *graph, QWidget *parent) : QDialog(parent), Graph(new QCustomPlot(this)) {
+	Graph->xAxis->setVisible(false);
+	Graph->yAxis->setVisible(false);
+	Graph->legend->setVisible(true);
+	Graph->legend->layout()->take(Graph->legend);
+	auto legendenLayout = new QCPLayoutInset;
+	legendenLayout->addElement(Graph->legend, Qt::AlignCenter);
+	Graph->plotLayout()->clear();
+	Graph->plotLayout()->addElement(legendenLayout);
+	
+	const auto plots = graph->plottableCount();
+	
+	for ( auto i = 0; i < plots; ++i ) {
+		auto plot = graph->plottable(i);
+		auto item = graph->legend->itemWithPlottable(plot);
+		
+		if ( item ) {
+			auto neuesItem = new QCPPlottableLegendItem(Graph->legend, plot);
+			Graph->legend->addItem(neuesItem);
+		} //if ( item )
+	} //for ( auto i = 0; i < plots; ++i )
+	
+	auto knoepfe = new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Vertical, this);
+	
+	connect(knoepfe, &QDialogButtonBox::accepted, this, &StatistikGraphDialog::accept);
+	connect(knoepfe->addButton("Speichern", QDialogButtonBox::NoRole), &QPushButton::clicked, this, &LegendenDialog::speichereGraph);
+	
+	auto layout = new QGridLayout(this);
+	layout->addWidget(Graph,                       0, 0, 1, -1);
+	layout->addWidget(knoepfe,                     3, 0, 1, -1);
+	layout->setColumnStretch(4, 1);
+	
+	setWindowTitle("Legende speichern");
+	return;
+}
+
 void GraphDialog::speichereGraph(void) {
 	const auto pfad = QFileDialog::getSaveFileName(this, "Speichere Graph", QString(), "*.pdf");
 	if ( pfad.isEmpty() ) {
@@ -22,10 +68,8 @@ void GraphDialog::speichereGraph(void) {
 }
 
 void GraphDialog::zeigeLegende(void) {
-	const auto plots = Graph->plottableCount();
-	for ( auto i = 0; i < plots; ++i ) {
-		Graph->plottable(i)->addToLegend(Graph->legend);
-	} //for ( auto i = 0; i < plots; ++i )
+	LegendenDialog dialog(Graph, this);
+	dialog.exec();
 	return;
 }
 

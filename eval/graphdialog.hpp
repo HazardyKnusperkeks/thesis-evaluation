@@ -7,6 +7,17 @@ class QCustomPlot;
 
 class QSpinBox;
 
+class LegendenDialog : public QDialog {
+	Q_OBJECT
+	private:
+	QCustomPlot* const Graph;
+	
+	void speichereGraph(void);
+	
+	public:
+	explicit LegendenDialog(QCustomPlot *graph, QWidget *parent = nullptr);
+};
+
 class GraphDialog : public QDialog {
 	Q_OBJECT
 	private:
