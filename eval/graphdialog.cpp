@@ -2,6 +2,7 @@
 
 #include "qcustomplot/qcustomplot.h"
 
+#include <QDebug>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QGridLayout>
@@ -109,6 +110,7 @@ StatistikGraphDialog::StatistikGraphDialog(QCustomPlot *graph, QWidget *parent) 
 		neuerPlot->setPen(alterPlot->pen());
 		neuerPlot->setWidth(alterPlot->width());
 		neuerPlot->setAntialiased(alterPlot->antialiased());
+		neuerPlot->setName(alterPlot->name());
 	} //for ( auto i = 0; i < plots; ++i )
 	return;
 }
@@ -160,6 +162,12 @@ BoxGraphDialog::BoxGraphDialog(QCustomPlot *graph, QWidget *parent) : GraphDialo
 		neuerPlot->setWidth(alterPlot->width());
 		neuerPlot->setAntialiased(alterPlot->antialiased());
 		neuerPlot->setBaseValue(alterPlot->baseValue());
+		neuerPlot->setName(alterPlot->name());
+		
+		if ( !graph->legend->hasItemWithPlottable(alterPlot) ) {
+			neuerPlot->removeFromLegend();
+		} //if ( !graph->legend->hasItemWithPlottable(alterPlot) )
 	} //for ( auto i = 0; i < plots; ++i )
 	return;
 }
+
