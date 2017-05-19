@@ -1,6 +1,6 @@
 #include "graphdialog.hpp"
 
-#include "qcustomplot/qcustomplot.h"
+#include "graphlegende.hpp"
 
 #include <QDebug>
 #include <QDialogButtonBox>
@@ -31,17 +31,29 @@ LegendenDialog::LegendenDialog(QCustomPlot *graph, QWidget *parent) : QDialog(pa
 	Graph->plotLayout()->clear();
 	Graph->plotLayout()->addElement(legendenLayout);
 	
-	const auto plots = graph->plottableCount();
-	
-	for ( auto i = 0; i < plots; ++i ) {
-		auto plot = graph->plottable(i);
-		auto item = graph->legend->itemWithPlottable(plot);
-		
-		if ( item ) {
+	auto zuLeg = qobject_cast<GraphZuLegende*>(graph);
+	if ( zuLeg ) {
+		auto plots = zuLeg->legendePlottable();
+		for ( const auto& plot : plots ) {
+			auto item = graph->legend->itemWithPlottable(plot);
+			Q_ASSERT(item);
 			auto neuesItem = new QCPPlottableLegendItem(Graph->legend, plot);
 			Graph->legend->addItem(neuesItem);
-		} //if ( item )
-	} //for ( auto i = 0; i < plots; ++i )
+		} //for ( const auto& plot : plots )
+	} //if ( zuLeg )
+	else {
+		const auto plots = graph->plottableCount();
+		
+		for ( auto i = 0; i < plots; ++i ) {
+			auto plot = graph->plottable(i);
+			auto item = graph->legend->itemWithPlottable(plot);
+			
+			if ( item ) {
+				auto neuesItem = new QCPPlottableLegendItem(Graph->legend, plot);
+				Graph->legend->addItem(neuesItem);
+			} //if ( item )
+		} //for ( auto i = 0; i < plots; ++i )
+	} //else -> if ( zuLeg )
 	
 	auto knoepfe = new QDialogButtonBox(QDialogButtonBox::Ok, this);
 	
@@ -68,13 +80,18 @@ void GraphDialog::speichereGraph(void) {
 }
 
 void GraphDialog::zeigeLegende(void) {
-	LegendenDialog dialog(Graph, this);
-	dialog.exec();
+	try {
+		LegendenDialog dialog(OriginalGraph, this);
+		dialog.exec();
+	} //try
+	catch ( ... ) {
+		QMessageBox::warning(this, "Unvollständige Legende", "Die Legende enthält nicht alle Elemente, also zeigen wir sie nicht an.");
+	} //catch ( ... )
 	return;
 }
 
-GraphDialog::GraphDialog(QCustomPlot *graph, QWidget *parent) : QDialog(parent), Breite(new QSpinBox(this)),
-		Hoehe(new QSpinBox(this)), Graph(new QCustomPlot(this)) {
+GraphDialog::GraphDialog(QCustomPlot *graph, QWidget *parent) : QDialog(parent), OriginalGraph(graph),
+		Breite(new QSpinBox(this)), Hoehe(new QSpinBox(this)), Graph(new QCustomPlot(this)) {
 	Graph->xAxis->setTicker(graph->xAxis->ticker());
 	Graph->yAxis->setTicker(graph->yAxis->ticker());
 	Graph->xAxis2->setTicker(graph->xAxis2->ticker());

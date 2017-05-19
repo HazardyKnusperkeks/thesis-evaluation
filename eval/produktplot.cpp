@@ -4,7 +4,7 @@
 #include <unordered_set>
 
 enum class ProduktStatus : int {
-	Nix,
+	Nix = 0,
 	AufMaschine,
 	InVerarbeitung,
 	AufRoboter,
@@ -47,6 +47,7 @@ QCPBars* ProduktPlot::generateBar(const ProduktStatus status, const bool mitName
 			case ProduktStatus::InVerarbeitung : ret->setName("Processing");      break;
 			default : Q_UNREACHABLE(); break;
 		} //switch ( status )
+		ret->setObjectName(QString::number(static_cast<int>(status)));
 	} //if ( mitName )
 	else {
 		ret->removeFromLegend();
@@ -54,7 +55,7 @@ QCPBars* ProduktPlot::generateBar(const ProduktStatus status, const bool mitName
 	return ret;
 }
 
-ProduktPlot::ProduktPlot(const std::vector<Produkt>& produkte, QWidget *parent) : QCustomPlot(parent),
+ProduktPlot::ProduktPlot(const std::vector<Produkt>& produkte, QWidget *parent) : GraphZuLegende(parent),
 		Produkte(produkte) {
 	if ( Produkte.empty() ) {
 		return;
@@ -136,4 +137,27 @@ ProduktPlot::ProduktPlot(const std::vector<Produkt>& produkte, QWidget *parent) 
 	xAxis->setRange(0., gameEnd);
 	xAxis->setLabel("Production Phase Gametime");
 	return;
+}
+
+std::vector<QCPAbstractPlottable*> ProduktPlot::legendePlottable(void) {
+	std::unordered_map<int, QCPAbstractPlottable*> map;
+	map.reserve(static_cast<int>(ProduktStatus::AufRoboter));
+	
+	const auto plots = plottableCount();
+	
+	for ( auto i = 0; i < plots; ++i ) {
+		auto plot = plottable(i);
+		auto item = legend->itemWithPlottable(plot);
+		
+		if ( item ) {
+			map.insert({plot->objectName().toInt(), plot});
+		} //if ( item )
+	} //for ( auto i = 0; i < plots; ++i )
+	
+	std::vector<QCPAbstractPlottable*> ret;
+	ret.resize(map.size());
+	ret.push_back(map.at(static_cast<int>(ProduktStatus::InVerarbeitung)));
+	ret.push_back(map.at(static_cast<int>(ProduktStatus::AufRoboter)));
+	ret.push_back(map.at(static_cast<int>(ProduktStatus::AufMaschine)));
+	return ret;
 }

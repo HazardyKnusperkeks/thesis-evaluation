@@ -51,6 +51,7 @@ QCPBars* RoboterPlot::generateBar(const TaskTyp typ, const bool mitName, const b
 			case TaskTyp::LateDeliver : ret->setName("Late Deliver"); break;
 			default : Q_UNREACHABLE(); break;
 		} //switch ( typ )
+		ret->setObjectName(QString::number(static_cast<int>(typ)));
 	} //if ( mitName )
 	else {
 		ret->removeFromLegend();
@@ -58,7 +59,8 @@ QCPBars* RoboterPlot::generateBar(const TaskTyp typ, const bool mitName, const b
 	return ret;
 }
 
-RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, QWidget *parent) : QCustomPlot(parent) {
+RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, QWidget *parent) :
+		GraphZuLegende(parent) {
 	if ( plan.empty() ) {
 		return;
 	} //if ( plan.empty() )
@@ -151,4 +153,35 @@ RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, 
 	xAxis->setRange(0., max);
 	xAxis->setLabel("Production Phase Gametime");
 	return;
+}
+
+std::vector<QCPAbstractPlottable*> RoboterPlot::legendePlottable(void) {
+	std::unordered_map<int, QCPAbstractPlottable*> map;
+	map.reserve(static_cast<int>(TaskTyp::UselessGoto));
+	
+	const auto plots = plottableCount();
+	
+	for ( auto i = 0; i < plots; ++i ) {
+		auto plot = plottable(i);
+		auto item = legend->itemWithPlottable(plot);
+		
+		if ( item ) {
+			map.insert({plot->objectName().toInt(), plot});
+		} //if ( item )
+	} //for ( auto i = 0; i < plots; ++i )
+	
+	std::vector<QCPAbstractPlottable*> ret;
+	ret.reserve(map.size());
+	ret.push_back(map.at(static_cast<int>(TaskTyp::Idle)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::UselessGoto)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::Goto)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::GetBase)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::GetProduct)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::MountRing)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::MountCap)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::PrepareCS)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::FillRS)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::Deliver)));
+	ret.push_back(map.at(static_cast<int>(TaskTyp::LateDeliver)));
+	return ret;
 }

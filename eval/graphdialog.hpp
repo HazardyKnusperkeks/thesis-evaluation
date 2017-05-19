@@ -21,6 +21,7 @@ class LegendenDialog : public QDialog {
 class GraphDialog : public QDialog {
 	Q_OBJECT
 	private:
+	QCustomPlot* const OriginalGraph;
 	QSpinBox* const Breite;
 	QSpinBox* const Hoehe;
 	

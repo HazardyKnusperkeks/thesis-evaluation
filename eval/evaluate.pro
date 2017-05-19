@@ -26,4 +26,5 @@ HEADERS += \
     encodingfenster.hpp \
     hauptfenster.hpp \
     zeitbismodellplot.hpp \
-    graphdialog.hpp
+    graphdialog.hpp \
+    graphlegende.hpp
