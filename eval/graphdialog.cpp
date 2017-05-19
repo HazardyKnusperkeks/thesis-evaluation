@@ -43,7 +43,7 @@ LegendenDialog::LegendenDialog(QCustomPlot *graph, QWidget *parent) : QDialog(pa
 		} //if ( item )
 	} //for ( auto i = 0; i < plots; ++i )
 	
-	auto knoepfe = new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Vertical, this);
+	auto knoepfe = new QDialogButtonBox(QDialogButtonBox::Ok, this);
 	
 	connect(knoepfe, &QDialogButtonBox::accepted, this, &StatistikGraphDialog::accept);
 	connect(knoepfe->addButton("Speichern", QDialogButtonBox::NoRole), &QPushButton::clicked, this, &LegendenDialog::speichereGraph);
