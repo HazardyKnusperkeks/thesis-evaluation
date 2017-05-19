@@ -98,7 +98,7 @@ RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, 
 					} //if ( taskIter == taskEnd )
 					const auto previous = taskIter - 1;
 					
-					return stringZuTyp(previous->Name) == TaskTyp::Goto || taskIter->location() != previous->location();
+					return stringZuTyp(taskIter->Name) == TaskTyp::Goto || taskIter->location() != previous->location();
 				} //if ( typ == TaskTyp::Goto )
 				return false;
 			};
