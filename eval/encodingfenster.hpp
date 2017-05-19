@@ -3,6 +3,7 @@
 
 #include "structs.hpp"
 
+#include <functional>
 #include <vector>
 
 #include <QWidget>
@@ -11,6 +12,7 @@ class DatenWidget;
 
 class QLineEdit;
 class QScrollArea;
+class QSpinBox;
 
 class QCustomPlot;
 
@@ -19,6 +21,7 @@ class EncodingFenster : public QWidget {
 	private:
 	QLineEdit *Pfad;
 	QScrollArea *ScrollWidget;
+	QSpinBox *WertSpin;
 	
 	std::vector<AnnotatedInfos> Daten;
 	std::vector<DatenWidget*> Widgets;
@@ -41,6 +44,13 @@ class EncodingFenster : public QWidget {
 	
 	void loescheDaten(DatenWidget *widget);
 	void zeigeLog(DatenWidget *widget);
+	
+	bool springeZuDaten(std::function<bool(const AnnotatedInfos&)> pred);
+	
+	void findeMin(void);
+	void findeAvg(void);
+	void findeMax(void);
+	void findeWert(void);
 	
 	public:
 	explicit EncodingFenster(const bool frei, QWidget *parent = nullptr);

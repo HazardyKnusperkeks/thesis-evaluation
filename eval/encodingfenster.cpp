@@ -17,6 +17,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QScrollBar>
+#include <QSpinBox>
 #include <QTimer>
 #include <QVBoxLayout>
 
@@ -151,7 +152,6 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		label->setFont(font);
 		zusammenFassung->addWidget(label, 0, ++spalte, Qt::AlignHCenter);
 	} //for ( const auto str : {"Anz", "Sum", "Min", "Max", "Avg", "Abw", "1.Q", "2.Q", "3.Q"} )
-	zusammenFassung->setColumnStretch(++spalte, 1);
 	
 	zeile = 1;
 	auto fuegeZeileHinzu = [&zeile,&zusammenFassung,&font,&widget](const char *str, const AvgSequenz<double>& seq) {
@@ -184,6 +184,32 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	fuegeZeileHinzu("O Idle:",              OutlierIdle.first);
 	fuegeZeileHinzu("StartUp",              StartUp);
 	
+	auto findMin = new QPushButton("Finde Min", widget);
+	connect(findMin, &QPushButton::clicked, this, &EncodingFenster::findeMin);
+	
+	auto findAvg = new QPushButton("Finde Avg", widget);
+	connect(findAvg, &QPushButton::clicked, this, &EncodingFenster::findeAvg);
+	
+	auto findMax = new QPushButton("Finde Max", widget);
+	connect(findMax, &QPushButton::clicked, this, &EncodingFenster::findeMax);
+	
+	WertSpin = new QSpinBox(widget);
+	WertSpin->setRange(OutlierPunkte.first.Min, OutlierPunkte.first.Max);
+	
+	auto findWert = new QPushButton("Finde Wert", widget);
+	connect(findWert, &QPushButton::clicked, this, &EncodingFenster::findeWert);
+	
+	auto knopfLayout = new QVBoxLayout;
+	knopfLayout->addWidget(findMin);
+	knopfLayout->addWidget(findAvg);
+	knopfLayout->addWidget(findMax);
+	knopfLayout->addWidget(WertSpin);
+	knopfLayout->addWidget(findWert);
+	knopfLayout->addStretch();
+	
+	zusammenFassung->addLayout(knopfLayout, 0, ++spalte, -1, 1);
+	zusammenFassung->setColumnStretch(++spalte, 1);
+	
 	layout->addLayout(zusammenFassung, 0, 0, 1, -1);
 	ScrollWidget->setWidget(widget);
 	widget->show();
@@ -209,6 +235,8 @@ void EncodingFenster::clear(void) {
 	OutlierIdle.first.Sequenz.clear();
 	
 	StartUp.Sequenz.clear();
+	
+	WertSpin = nullptr;
 	return;
 }
 
@@ -273,7 +301,44 @@ void EncodingFenster::zeigeLog(DatenWidget* widget) {
 	return;
 }
 
-EncodingFenster::EncodingFenster(const bool frei, QWidget *parent) : QWidget(parent) {
+bool EncodingFenster::springeZuDaten(std::function<bool(const AnnotatedInfos&)> pred) {
+	const auto begin = Daten.begin(), end = Daten.end();
+	auto iter = std::find_if(begin, end, pred);
+	if ( iter == end ) {
+		return false;
+	} //if ( iter == end )
+	
+	ScrollWidget->ensureWidgetVisible(Widgets.at(std::distance(begin, iter)));
+	return true;
+}
+
+void EncodingFenster::findeMin(void) {
+	springeZuDaten([this](const AnnotatedInfos& info) { return !info.IstOutlier && info.Punkte == OutlierPunkte.first.Min; });
+	return;
+}
+
+void EncodingFenster::findeAvg(void) {
+	int delta = 0;
+	bool weiter;
+	auto lambda = [this,&delta](const AnnotatedInfos& info) { return !info.IstOutlier && !info.HatFailedTask && std::abs(info.Punkte - OutlierPunkte.first.Avg) <= delta; };
+	do { //while ( weiter )
+		weiter = !springeZuDaten(lambda);
+		++delta;
+	} while ( weiter );
+	return;
+}
+
+void EncodingFenster::findeMax(void) {
+	springeZuDaten([this](const AnnotatedInfos& info) { return !info.IstOutlier && info.Punkte == OutlierPunkte.first.Max; });
+	return;
+}
+
+void EncodingFenster::findeWert(void) {
+	springeZuDaten([this](const AnnotatedInfos& info) { return !info.IstOutlier && info.Punkte == WertSpin->value(); });
+	return;
+}
+
+EncodingFenster::EncodingFenster(const bool frei, QWidget *parent) : QWidget(parent), WertSpin(nullptr) {
 	Pfad = new QLineEdit(this);
 	Pfad->setReadOnly(true);
 	
