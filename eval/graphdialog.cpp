@@ -63,7 +63,7 @@ void GraphDialog::speichereGraph(void) {
 		return;
 	} //if ( pfad.isEmpty() )
 	
-	Graph->savePdf(pfad);
+	Graph->savePdf(pfad, Breite->value(), Hoehe->value());
 	return;
 }
 
