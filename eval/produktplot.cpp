@@ -42,9 +42,9 @@ QCPBars* ProduktPlot::generateBar(const ProduktStatus status, const bool mitName
 	
 	if ( mitName ) {
 		switch ( status ) {
-			case ProduktStatus::AufMaschine    : ret->setName("Idle");         break;
-			case ProduktStatus::AufRoboter     : ret->setName("Goto");         break;
-			case ProduktStatus::InVerarbeitung : ret->setName("Useless Goto"); break;
+			case ProduktStatus::AufMaschine    : ret->setName("Wait on machine"); break;
+			case ProduktStatus::AufRoboter     : ret->setName("Hold by robot");   break;
+			case ProduktStatus::InVerarbeitung : ret->setName("Processing");      break;
 			default : Q_UNREACHABLE(); break;
 		} //switch ( status )
 	} //if ( mitName )

@@ -15,11 +15,13 @@ ZeitBisModellPlot::ZeitBisModellPlot(const std::map<int, AvgSequenz<double>>& ze
 	
 	bisPlot->setBarsGroup(gruppe);
 	bisPlot->setWidth(.3);
+	bisPlot->setName("Time to model");
 	
 	seitPlot->setBarsGroup(gruppe);
 	seitPlot->setBrush(QColor(180, 00, 120, 50));
 	seitPlot->setPen(QColor(180, 00, 120));
 	seitPlot->setWidth(.3);
+	seitPlot->setName("Time since last model");
 	
 	auto ticker = QSharedPointer<QCPAxisTickerText>::create();
 	ticker->setSubTickCount(0.);

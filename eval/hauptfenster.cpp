@@ -117,6 +117,10 @@ void Hauptfenster::update(void) {
 	planerPunktePlot->setBrush(Qt::yellow);
 	planerPunkteCompletePlot->setBrush(Qt::red);
 	
+	punktePlot->setName("Points by refbox");
+	planerPunktePlot->setName("Points by planner");
+	planerPunkteCompletePlot->setName("Points by planner, w/ time after game");
+	
 	auto outlierPunkteGraph = new QCustomPlot(parentWidget);
 	auto outlierPunktePlot = new QCPStatisticalBox(outlierPunkteGraph->xAxis, outlierPunkteGraph->yAxis);
 	auto outlierPlanerPunktePlot = new QCPStatisticalBox(outlierPunkteGraph->xAxis, outlierPunkteGraph->yAxis);
