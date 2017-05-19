@@ -137,7 +137,7 @@ RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, 
 		
 		if ( now < gameEndWithOffset ) {
 			auto bar = getBar(TaskTyp::Idle, false);
-			bar->setBaseValue(now);
+			bar->setBaseValue(now - offset);
 			bar->addData(iter.key(), gameEndWithOffset - now);
 			now = gameEndWithOffset;
 		} //if ( now < gameEndWithOffset )
