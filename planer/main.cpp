@@ -174,6 +174,18 @@ int main(int argc, char *argv[]) {
 			} //if ( !QFile::copy(alterPfad, neuerPfad) )
 		} //for ( int i = 1; i <= 3; ++i )
 		
+		for ( int i = 4; i <= 6; ++i ) {
+			const auto alterPfad(dir.filePath("debug" + QString::number(i) + ".log"));
+			if ( !QFile::exists(alterPfad) ) {
+				break;
+			} //if ( !QFile::exists(alterPfad) )
+			const auto neuerPfad(ausgabePfad + QString::number(dateiCount) + "-roboter" + QString::number(i) + ".log");
+			if ( !QFile::copy(alterPfad, neuerPfad) ) {
+				std::cerr<<"Fehler beim kopieren vom Roboter "<<i<<" Log."<<std::endl;
+				return 3;
+			} //if ( !QFile::copy(alterPfad, neuerPfad) )
+		} //for ( int i = 1; i <= 3; ++i )
+		
 		auto alterPfad(dir.filePath("refbox.log"));
 		auto neuerPfad(ausgabePfad + QString::number(dateiCount) + "-refbox.log");
 		if ( !QFile::copy(alterPfad, neuerPfad) ) {
