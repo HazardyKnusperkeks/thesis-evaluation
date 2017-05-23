@@ -23,19 +23,19 @@ class EncodingFenster : public QWidget {
 	QScrollArea *ScrollWidget;
 	QSpinBox *WertSpin;
 	
-	std::vector<AnnotatedInfos> Daten;
+	std::vector<AnnotatedInfos> Daten, GegnerDaten;
 	std::vector<DatenWidget*> Widgets;
 	
-	AvgSequenz<double> Punkte;
+	AvgSequenz<double> Punkte, GegnerPunkte;
 	AvgSequenz<double> PlanerPunkte;
 	AvgSequenz<double> PlanerPunkteNachSpiel;
 	
-	std::pair<AvgSequenz<double>, QVector<double>> OutlierPunkte;
+	std::pair<AvgSequenz<double>, QVector<double>> OutlierPunkte, GegnerOutlierPunkte;
 	std::pair<AvgSequenz<double>, QVector<double>> OutlierPlanerPunkte;
 	std::pair<AvgSequenz<double>, QVector<double>> OutlierPlanerPunkteNachSpiel;
 	
-	AvgSequenz<double> Idle;
-	std::pair<AvgSequenz<double>, QVector<double>> OutlierIdle;
+	AvgSequenz<double> Idle, GegnerIdle;
+	std::pair<AvgSequenz<double>, QVector<double>> OutlierIdle, GegnerOutlierIdle;
 	
 	AvgSequenz<double> StartUp;
 	

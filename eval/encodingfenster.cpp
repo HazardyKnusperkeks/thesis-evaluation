@@ -37,6 +37,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	
 	const auto reserve = dateien.size();
 	Daten.reserve(reserve);
+	GegnerDaten.reserve(reserve);
 	Punkte.Sequenz.reserve(reserve);
 	PlanerPunkte.Sequenz.reserve(reserve);
 	PlanerPunkteNachSpiel.Sequenz.reserve(reserve);
@@ -58,8 +59,8 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	for ( const auto& dateiPfad : dateien ) {
 		QFile datei(verzeichnis.filePath(dateiPfad));
 		
-		AnnotatedInfos info;
-		info.Spiel = ++spiel;
+		AnnotatedInfos info, gegnerInfo;
+		gegnerInfo.Spiel = info.Spiel = ++spiel;
 		
 		if ( datei.open(QIODevice::ReadOnly) ) {
 			QDataStream stream(&datei);
@@ -73,14 +74,22 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		datei.setFileName(verzeichnis.filePath(QString::number(spiel) + "-refbox.log"));
 		
 		if ( datei.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+			bool gegner = false;
 			//I 15:05:16.816897 C: OVERALL TOTAL POINTS: 162
 			while ( !datei.atEnd() ) {
 				QByteArray zeile(datei.readLine());
 				if ( zeile.contains("OVERALL TOTAL") ) {
 					const auto pos = zeile.lastIndexOf(' ') + 1;
-					info.Punkte = zeile.mid(pos, zeile.size() - pos - 1).toInt();
-					info.berechneIstOutlier();
-					break;
+					if ( gegner ) {
+						gegnerInfo.Punkte = zeile.mid(pos, zeile.size() - pos - 1).toInt();
+						break;
+					} //if ( gegner )
+					else {
+						info.Punkte = zeile.mid(pos, zeile.size() - pos - 1).toInt();
+						info.berechneIstOutlier();
+						gegnerInfo.IstOutlier = info.IstOutlier;
+						gegner = true;
+					} //else -> if ( gegner )
 				} //if ( zeile.contains("OVERALL TOTAL") )
 			} //while ( !datei.atEnd() )
 		} //if ( datei.open(QIODevice::ReadOnly | QIODevice::Text) )
@@ -88,8 +97,10 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		info.Memory = QPixmap(verzeichnis.filePath(QString::number(spiel) + "-Memory.png"));
 		
 		Daten.emplace_back(std::move(info));
+		GegnerDaten.emplace_back(std::move(gegnerInfo));
 		
 		auto& daten(Daten.back());
+		auto& gegnerDaten(GegnerDaten.back());
 		
 		auto widget = new DatenWidget(daten);
 		connect(widget, &DatenWidget::graphDoppelklick, this, &EncodingFenster::graphDoppelklick);
@@ -105,39 +116,49 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		connect(widget, &DatenWidget::zeigeLog,       this, &EncodingFenster::zeigeLog);
 		
 		Punkte.Sequenz.push_back(daten.Punkte);
+		GegnerPunkte.Sequenz.push_back(gegnerDaten.Punkte);
 		PlanerPunkte.Sequenz.push_back(daten.PlanerPunkteInGame);
 		PlanerPunkteNachSpiel.Sequenz.push_back(daten.PlanerPunkteComplete);
 		
 		Idle.Sequenz.push_back(daten.Idle);
+		GegnerIdle.Sequenz.push_back(gegnerDaten.Idle);
 		
 		StartUp.Sequenz.push_back(daten.StartUp);
 		
 		if ( daten.IstOutlier ) {
 			OutlierPunkte.second.push_back(daten.Punkte);
+			GegnerOutlierPunkte.second.push_back(gegnerDaten.Punkte);
 			OutlierPlanerPunkte.second.push_back(daten.PlanerPunkteInGame);
 			OutlierPlanerPunkteNachSpiel.second.push_back(daten.PlanerPunkteComplete);
 			
 			OutlierIdle.second.push_back(daten.Idle);
+			GegnerOutlierIdle.second.push_back(gegnerDaten.Idle);
 		} //if ( daten.IstOutlier )
 		else {
 			OutlierPunkte.first.Sequenz.push_back(daten.Punkte);
+			GegnerOutlierPunkte.first.Sequenz.push_back(gegnerDaten.Punkte);
 			OutlierPlanerPunkte.first.Sequenz.push_back(daten.PlanerPunkteInGame);
 			OutlierPlanerPunkteNachSpiel.first.Sequenz.push_back(daten.PlanerPunkteComplete);
 			
 			OutlierIdle.first.Sequenz.push_back(daten.Idle);
+			GegnerOutlierIdle.first.Sequenz.push_back(gegnerDaten.Idle);
 		} //else -> if ( daten.IstOutlier )
 	} //for ( const auto& dateiPfad : dateien )
 	
 	Punkte.calc();
+	GegnerPunkte.calc();
 	PlanerPunkte.calc();
 	PlanerPunkteNachSpiel.calc();
 	
 	OutlierPunkte.first.calc();
+	GegnerOutlierPunkte.first.calc();
 	OutlierPlanerPunkte.first.calc();
 	OutlierPlanerPunkteNachSpiel.first.calc();
 	
 	Idle.calc();
+	GegnerIdle.calc();
 	OutlierIdle.first.calc();
+	GegnerOutlierIdle.first.calc();
 	
 	StartUp.calc();
 	
@@ -183,6 +204,13 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	fuegeZeileHinzu("O Pl. Punkte Gesamt:", OutlierPlanerPunkteNachSpiel.first);
 	fuegeZeileHinzu("O Idle:",              OutlierIdle.first);
 	fuegeZeileHinzu("StartUp",              StartUp);
+	if ( GegnerPunkte.Max ) {
+		zusammenFassung->addWidget(new QLabel(widget), ++zeile, 0); //Leerzeile
+		fuegeZeileHinzu("G. Punkte: ",      GegnerPunkte);
+		fuegeZeileHinzu("G. Idle: ",        GegnerIdle);
+		fuegeZeileHinzu("G. O Punkte: ",    GegnerOutlierPunkte.first);
+		fuegeZeileHinzu("G. O Idle: ",      GegnerOutlierIdle.first);
+	} //if ( GegnerPunkte.Max )
 	
 	auto findMin = new QPushButton("Finde Min", widget);
 	connect(findMin, &QPushButton::clicked, this, &EncodingFenster::findeMin);
@@ -223,16 +251,21 @@ void EncodingFenster::clear(void) {
 	delete ScrollWidget->takeWidget();
 	Widgets.clear();
 	Daten.clear();
+	GegnerDaten.clear();
 	
 	Punkte.Sequenz.clear();
+	GegnerPunkte.Sequenz.clear();
 	PlanerPunkte.Sequenz.clear();
 	PlanerPunkteNachSpiel.Sequenz.clear();
 	OutlierPunkte.first.Sequenz.clear();
+	GegnerOutlierPunkte.first.Sequenz.clear();
 	OutlierPlanerPunkte.first.Sequenz.clear();
 	OutlierPlanerPunkteNachSpiel.first.Sequenz.clear();
 	
 	Idle.Sequenz.clear();
+	GegnerIdle.Sequenz.clear();
 	OutlierIdle.first.Sequenz.clear();
+	GegnerOutlierIdle.first.Sequenz.clear();
 	
 	StartUp.Sequenz.clear();
 	
@@ -245,7 +278,8 @@ void EncodingFenster::loescheDaten(DatenWidget* widget) {
 	auto spielString = QString::number(spiel);
 	
 	constexpr const char *suffixe[] = {".parsed", "-filtered.log", "-Memory.png", "-Memory.rrd", "-roboter1.log",
-	                                   "-roboter2.log", "-roboter3.log", "-refbox.log", "-planer.log"};
+	                                   "-roboter2.log", "-roboter3.log", "-roboter4.log", "-roboter5.log",
+	                                   "-roboter6.log", "-refbox.log", "-planer.log"};
 	
 	if ( QMessageBox::question(this, "Löschen?",
 	                           "Soll Spiel " + spielString + " wirklich gelöscht werden?") == QMessageBox::Yes ) {
@@ -256,7 +290,6 @@ void EncodingFenster::loescheDaten(DatenWidget* widget) {
 			const auto datei(verzeichnis.filePath(spielString + suffix));
 			if ( !QFile::remove(datei) ) {
 				QMessageBox::warning(this, "Fehler", "Konnte " + datei + " nicht löschen! Manuelles eingreifen nötig!");
-				return;
 			} //if ( !QFile::remove(datei) )
 		} //for ( const auto& suffix : suffixe )
 		
