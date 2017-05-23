@@ -194,7 +194,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	connect(findMax, &QPushButton::clicked, this, &EncodingFenster::findeMax);
 	
 	WertSpin = new QSpinBox(widget);
-	WertSpin->setRange(OutlierPunkte.first.Min, OutlierPunkte.first.Max);
+	WertSpin->setRange(Punkte.Min, Punkte.Max);
 	
 	auto findWert = new QPushButton("Finde Wert", widget);
 	connect(findWert, &QPushButton::clicked, this, &EncodingFenster::findeWert);
