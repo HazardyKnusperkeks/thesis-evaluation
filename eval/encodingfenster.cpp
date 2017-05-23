@@ -55,7 +55,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	int spalte = 0, zeile = 1;
 	constexpr int maxSpalten = 10;
 	
-	int spiel = 0;
+	int spiel = 0, gewonnen = 0, unentschieden = 0, outlierGewonnen = 0, outlierUnentschieden = 0;
 	for ( const auto& dateiPfad : dateien ) {
 		QFile datei(verzeichnis.filePath(dateiPfad));
 		
@@ -82,6 +82,18 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 					const auto pos = zeile.lastIndexOf(' ') + 1;
 					if ( gegner ) {
 						gegnerInfo.Punkte = zeile.mid(pos, zeile.size() - pos - 1).toInt();
+						if ( gegnerInfo.Punkte < info.Punkte ) {
+							++gewonnen;
+							if ( !info.IstOutlier ) {
+								++outlierGewonnen;
+							} //if ( !info.IstOutlier )
+						} //if ( gegnerInfo.Punkte < info.Punkte )
+						else if ( gegnerInfo.Punkte == info.Punkte ) {
+							++unentschieden;
+							if ( !info.IstOutlier ) {
+								++outlierUnentschieden;
+							} //if ( !info.IstOutlier )
+						} //else if ( gegnerInfo.Punkte == info.Punkte )
 						break;
 					} //if ( gegner )
 					else {
@@ -210,6 +222,22 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		fuegeZeileHinzu("G. Idle: ",        GegnerIdle);
 		fuegeZeileHinzu("G. O Punkte: ",    GegnerOutlierPunkte.first);
 		fuegeZeileHinzu("G. O Idle: ",      GegnerOutlierIdle.first);
+		zusammenFassung->addWidget(new QLabel(widget), ++zeile, 0); //Leerzeile
+		
+		++zeile;
+		zusammenFassung->addWidget(new QLabel("Gewonnen:", widget), zeile, 0);
+		zusammenFassung->addWidget(new QLabel(QString::number(gewonnen), widget), zeile, 1);
+		zusammenFassung->addWidget(new QLabel(QString::number(outlierGewonnen), widget), zeile, 2);
+		
+		++zeile;
+		zusammenFassung->addWidget(new QLabel("Unentschieden:", widget), zeile, 0);
+		zusammenFassung->addWidget(new QLabel(QString::number(unentschieden), widget), zeile, 1);
+		zusammenFassung->addWidget(new QLabel(QString::number(outlierUnentschieden), widget), zeile, 2);
+		
+		++zeile;
+		zusammenFassung->addWidget(new QLabel("Verloren:", widget), zeile, 0);
+		zusammenFassung->addWidget(new QLabel(QString::number(reserve - gewonnen - unentschieden), widget), zeile, 1);
+		zusammenFassung->addWidget(new QLabel(QString::number(OutlierPunkte.first.Sequenz.size() - outlierGewonnen - outlierUnentschieden), widget), zeile, 2);
 	} //if ( GegnerPunkte.Max )
 	
 	auto findMin = new QPushButton("Finde Min", widget);
