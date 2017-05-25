@@ -255,12 +255,16 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 	auto findWert = new QPushButton("Finde Wert", widget);
 	connect(findWert, &QPushButton::clicked, this, &EncodingFenster::findeWert);
 	
+	auto letzte = new QPushButton("Gehe zu letztem", widget);
+	connect(letzte, &QPushButton::clicked, this, &EncodingFenster::zeigeLetzteDaten);
+	
 	auto knopfLayout = new QVBoxLayout;
 	knopfLayout->addWidget(findMin);
 	knopfLayout->addWidget(findAvg);
 	knopfLayout->addWidget(findMax);
 	knopfLayout->addWidget(WertSpin);
 	knopfLayout->addWidget(findWert);
+	knopfLayout->addWidget(letzte);
 	knopfLayout->addStretch();
 	
 	zusammenFassung->addLayout(knopfLayout, 0, ++spalte, -1, 1);
@@ -396,6 +400,11 @@ void EncodingFenster::findeMax(void) {
 
 void EncodingFenster::findeWert(void) {
 	springeZuDaten([this](const AnnotatedInfos& info) { return !info.IstOutlier && info.Punkte == WertSpin->value(); });
+	return;
+}
+
+void EncodingFenster::zeigeLetzteDaten(void) {
+	ScrollWidget->ensureWidgetVisible(Widgets.back());
 	return;
 }
 

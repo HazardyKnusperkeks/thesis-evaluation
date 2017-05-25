@@ -52,6 +52,8 @@ class EncodingFenster : public QWidget {
 	void findeMax(void);
 	void findeWert(void);
 	
+	void zeigeLetzteDaten(void);
+	
 	public:
 	explicit EncodingFenster(const bool frei, QWidget *parent = nullptr);
 	
