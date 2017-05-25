@@ -60,15 +60,19 @@ class EncodingFenster : public QWidget {
 	void setzePfad(const QString& pfad);
 	
 	const AvgSequenz<double>& punkte(void) const;
+	const AvgSequenz<double>& gegnerPunkte(void) const;
 	const AvgSequenz<double>& planerPunkte(void) const;
 	const AvgSequenz<double>& planerPunkteNachSpiel(void) const;
 	
 	const std::pair<AvgSequenz<double>, QVector<double>>& outlierPunkte(void) const;
+	const std::pair<AvgSequenz<double>, QVector<double>>& gegnerOutlierPunkte(void) const;
 	const std::pair<AvgSequenz<double>, QVector<double>>& outlierPlanerPunkte(void) const;
 	const std::pair<AvgSequenz<double>, QVector<double>>& outlierPlanerPunkteNachSpiel(void) const;
 	
 	const AvgSequenz<double>& idle(void) const;
+	const AvgSequenz<double>& gegnerIdle(void) const;
 	const std::pair<AvgSequenz<double>, QVector<double>>& outlierIdle(void) const;
+	const std::pair<AvgSequenz<double>, QVector<double>>& gegnerOutlierIdle(void) const;
 	
 	const AvgSequenz<double>& startUp(void) const;
 	

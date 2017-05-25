@@ -7,7 +7,8 @@ SOURCES += \
     encodingfenster.cpp \
     hauptfenster.cpp \
     zeitbismodellplot.cpp \
-    graphdialog.cpp
+    graphdialog.cpp \
+    parseclips.cpp
 
 CONFIG += c++1z
 
@@ -27,4 +28,5 @@ HEADERS += \
     hauptfenster.hpp \
     zeitbismodellplot.hpp \
     graphdialog.hpp \
-    graphlegende.hpp
+    graphlegende.hpp \
+    parseclips.hpp

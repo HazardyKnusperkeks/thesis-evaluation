@@ -1,10 +1,13 @@
 #include "datenwidget.hpp"
 
+#include "parseclips.hpp"
 #include "produktplot.hpp"
 #include "roboterplot.hpp"
 #include "structs.hpp"
 #include "zeitbismodellplot.hpp"
 
+#include <QDir>
+#include <QFile>
 #include <QFont>
 #include <QGridLayout>
 #include <QImage>
@@ -19,7 +22,7 @@ bool DatenWidget::checkFehler(void) const noexcept {
 	return false;
 }
 
-DatenWidget::DatenWidget(const AnnotatedInfos& info, QWidget *parent) : QFrame(parent), Info(info) {
+DatenWidget::DatenWidget(const AnnotatedInfos& info, AnnotatedInfos& gegnerInfo, const QString& pfad, QWidget *parent) : QFrame(parent), Info(info), GegnerInfo(gegnerInfo) {
 	auto spielLabel = new QLabel("Spiel #" + QString::number(info.Spiel), this);
 	auto font = spielLabel->font();
 	font.setBold(true);
@@ -78,14 +81,44 @@ DatenWidget::DatenWidget(const AnnotatedInfos& info, QWidget *parent) : QFrame(p
 	layout->addWidget(failLabel,                            3, 2);
 	layout->addWidget(new QLabel("Idle:", this),            4, 0);
 	layout->addWidget(new QLabel(QString::number(Info.Idle), this), 4, 1);
-	layout->addWidget(memoryLabel,                          5, 0, 1, -1);
-	layout->addWidget(roboterPlot,                          6, 0, 1, -1);
-	layout->addWidget(produktPlot,                          7, 0, 1, -1);
-	layout->addWidget(modellPlot,                           8, 0, 1, -1);
+	layout->addWidget(memoryLabel,                          5, 0, 1, 4);
+	layout->addWidget(roboterPlot,                          6, 0, 1, 4);
+	layout->addWidget(produktPlot,                          7, 0, 1, 4);
+	layout->addWidget(modellPlot,                           8, 0, 1, 4);
 	
 	layout->addWidget(loeschenKnopf,                        1, 3);
 	layout->addWidget(fehlerLabel,                          2, 3);
 	layout->addWidget(logKnopf,                             3, 3);
+	
+	constexpr const char* roboNamen[] = {"R-1", "R-2", "R-3"};
+	constexpr const char* dateiNamen[] = {"-roboter4.log", "-roboter5.log", "-roboter6.log"};
+	
+	QDir verzeichnis(pfad);
+	bool mitGegner = false;
+	
+	for ( int i = 0; i < 3; ++i ) {
+		TaskList& tasks = GegnerInfo.AusgefuehrterPlan[roboNamen[i]];
+		
+		QFile datei(verzeichnis.filePath(QString::number(GegnerInfo.Spiel) + dateiNamen[i]));
+		
+		if ( datei.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+			mitGegner = true;
+			GegnerInfo.Idle += parseClips(tasks, datei);
+		} //if ( datei.open(QIODevice::ReadOnly | QIODevice::Text) )
+		else {
+			break;
+		} //else -> if ( datei.open(QIODevice::ReadOnly | QIODevice::Text) )
+	} //for ( int i = 0; i < 3; ++i )
+	
+	if ( mitGegner ) {
+		auto roboterPlot = new RoboterPlot(GegnerInfo.AusgefuehrterPlan, this);
+		roboterPlot->setMinimumSize(memoryLabel->sizeHint());
+		connect(roboterPlot, &RoboterPlot::mouseDoubleClick, this, [this,roboterPlot](void) { emit graphDoppelklick(roboterPlot); return; });
+		
+		layout->addWidget(new QLabel(QString::number(GegnerInfo.Punkte), this), 1, 2);
+		layout->addWidget(new QLabel(QString::number(GegnerInfo.Idle),   this), 4, 2);
+		layout->addWidget(roboterPlot,                                          6, 4);
+	} //if ( mitGegner )
 	
 	setFrameShape(QFrame::Box);
 	return;

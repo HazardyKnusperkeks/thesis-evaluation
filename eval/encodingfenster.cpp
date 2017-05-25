@@ -114,7 +114,7 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		auto& daten(Daten.back());
 		auto& gegnerDaten(GegnerDaten.back());
 		
-		auto widget = new DatenWidget(daten);
+		auto widget = new DatenWidget(daten, gegnerDaten, pfad, this);
 		connect(widget, &DatenWidget::graphDoppelklick, this, &EncodingFenster::graphDoppelklick);
 		Widgets.push_back(widget);
 		layout->addWidget(widget, zeile, spalte);
@@ -228,16 +228,19 @@ void EncodingFenster::leseDaten(const QString& pfad) {
 		zusammenFassung->addWidget(new QLabel("Gewonnen:", widget), zeile, 0);
 		zusammenFassung->addWidget(new QLabel(QString::number(gewonnen), widget), zeile, 1);
 		zusammenFassung->addWidget(new QLabel(QString::number(outlierGewonnen), widget), zeile, 2);
+		zusammenFassung->addWidget(new QLabel(QString::number(gewonnen - outlierGewonnen), widget), zeile, 3);
 		
 		++zeile;
 		zusammenFassung->addWidget(new QLabel("Unentschieden:", widget), zeile, 0);
 		zusammenFassung->addWidget(new QLabel(QString::number(unentschieden), widget), zeile, 1);
 		zusammenFassung->addWidget(new QLabel(QString::number(outlierUnentschieden), widget), zeile, 2);
+		zusammenFassung->addWidget(new QLabel(QString::number(unentschieden - outlierUnentschieden), widget), zeile, 3);
 		
 		++zeile;
 		zusammenFassung->addWidget(new QLabel("Verloren:", widget), zeile, 0);
 		zusammenFassung->addWidget(new QLabel(QString::number(reserve - gewonnen - unentschieden), widget), zeile, 1);
 		zusammenFassung->addWidget(new QLabel(QString::number(OutlierPunkte.first.Sequenz.size() - outlierGewonnen - outlierUnentschieden), widget), zeile, 2);
+		zusammenFassung->addWidget(new QLabel(QString::number((reserve - OutlierPunkte.first.Sequenz.size()) - ((gewonnen + unentschieden) - (outlierGewonnen + outlierUnentschieden))), widget), zeile, 3);
 	} //if ( GegnerPunkte.Max )
 	
 	auto findMin = new QPushButton("Finde Min", widget);
@@ -448,6 +451,10 @@ const AvgSequenz<double>& EncodingFenster::punkte(void) const {
 	return Punkte;
 }
 
+const AvgSequenz<double>& EncodingFenster::gegnerPunkte(void) const {
+	return GegnerPunkte;
+}
+
 const AvgSequenz<double>& EncodingFenster::planerPunkte(void) const {
 	return PlanerPunkte;
 }
@@ -458,6 +465,10 @@ const AvgSequenz<double>& EncodingFenster::planerPunkteNachSpiel(void) const {
 
 const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierPunkte(void) const {
 	return OutlierPunkte;
+}
+
+const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::gegnerOutlierPunkte(void) const {
+	return GegnerOutlierPunkte;
 }
 
 const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierPlanerPunkte(void) const {
@@ -472,8 +483,16 @@ const AvgSequenz<double>& EncodingFenster::idle(void) const {
 	return Idle;
 }
 
+const AvgSequenz<double>& EncodingFenster::gegnerIdle(void) const {
+	return GegnerIdle;
+}
+
 const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::outlierIdle(void) const {
 	return OutlierIdle;
+}
+
+const std::pair<AvgSequenz<double>, QVector<double>>& EncodingFenster::gegnerOutlierIdle(void) const {
+	return GegnerOutlierIdle;
 }
 
 const AvgSequenz<double>& EncodingFenster::startUp(void) const {

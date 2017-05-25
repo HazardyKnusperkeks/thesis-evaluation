@@ -20,8 +20,9 @@ class DatenWidget : public QFrame {
 	
 	public:
 	const AnnotatedInfos& Info;
+	AnnotatedInfos& GegnerInfo;
 	
-	explicit DatenWidget(const AnnotatedInfos& info, QWidget *parent = nullptr);
+	explicit DatenWidget(const AnnotatedInfos& info, AnnotatedInfos& gegnerInfo, const QString& pfad, QWidget *parent = nullptr);
 	
 	void updatePlanerPunkte(void);
 	

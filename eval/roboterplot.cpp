@@ -65,7 +65,11 @@ RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, 
 		return;
 	} //if ( plan.empty() )
 	
-	QMap<double, QString> roboterTicks = {{3., "Tuvok"}, {2., "T'Pol"}, {1., "Spock"}};
+	const bool clips = plan.count("R-1");
+	
+	const QMap<double, QString> roboterTicksASP = {{3., "Tuvok"}, {2., "T'Pol"}, {1., "Spock"}};;
+	const QMap<double, QString> roboterTicksCLIPS = {{3., "R-1"}, {2., "R-2"}, {1., "R-3"}};
+	const auto& roboterTicks = clips ? roboterTicksCLIPS : roboterTicksASP;
 	auto roboterTicker = QSharedPointer<QCPAxisTickerText>::create();
 	roboterTicker->setTicks(roboterTicks);
 	
@@ -118,7 +122,7 @@ RoboterPlot::RoboterPlot(const std::unordered_map<std::string, TaskList>& plan, 
 			else {
 				typ = stringZuTyp(taskIter->Name);
 				if ( taskIter->End == 0 ) {
-					size = 30;
+					size = clips ? (gameEndWithOffset - now) : 30;
 					now  = taskIter->Begin + size;
 				} //if ( taskIter->End == 0 )
 				else {

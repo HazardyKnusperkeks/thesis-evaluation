@@ -162,18 +162,25 @@ void Hauptfenster::update(void) {
 	
 	double index1 = 1., index3 = 2., pktMax = 0., idleMax = 0., startUpMax = 0.;
 	
+	int eintraege = Encodings.size();
+	for ( const auto& encoding : Encodings ) {
+		if ( encoding.second->gegnerPunkte().Max ) {
+			++eintraege;
+		} //if ( encoding.second->gegnerPunkte().Max )
+	} //for ( const auto& encoding : Encodings )
+	
 	for ( auto& graph : graphen1 ) {
-		graph->xAxis->setRange(.5, Encodings.size() + .5);
+		graph->xAxis->setRange(.5, eintraege + .5);
 		graph->xAxis->setTicker(encodingTicker1);
 		
-		graph->setMinimumSize(100 * Encodings.size() + 10 * (Encodings.size() - 1) + 50, 480);
+		graph->setMinimumSize(100 * eintraege + 10 * (eintraege - 1) + 50, 480);
 	} //for ( auto& graph : graphen1 )
 	
 	for ( auto& graph : graphen3 ) {
-		graph->xAxis->setRange(.5, 3. * Encodings.size());
+		graph->xAxis->setRange(.5, 3. * eintraege);
 		graph->xAxis->setTicker(encodingTicker3);
 		
-		graph->setMinimumSize(300 * Encodings.size() + 10 * (Encodings.size() - 1) + 50, 480);
+		graph->setMinimumSize(300 * eintraege + 10 * (eintraege - 1) + 50, 480);
 	} //for ( auto& graph : graphen3 )
 	
 	for ( auto& list : graphen ) {
@@ -225,6 +232,32 @@ void Hauptfenster::update(void) {
 		startUpPlot->addData(index1, startUp.Min, startUp.ErstesQuartil, startUp.ZweitesQuartil, startUp.DrittesQuartil, startUp.Max);
 		
 		startUpMax = std::max(startUpMax, startUp.Max);
+		
+		if ( encoding->gegnerPunkte().Max ) {
+			index1 += 1.;
+			index3 += 3.;
+			
+			encodingTicker1->addTick(index1, "CLIPS");
+			encodingTicker3->addTick(index3, "CLIPS");
+			
+			const auto& punkte = encoding->gegnerPunkte();
+			punktePlot->addData(index3, punkte.Min, punkte.ErstesQuartil, punkte.ZweitesQuartil, punkte.DrittesQuartil, punkte.Max);
+			nurPktPlot->addData(index1, punkte.Min, punkte.ErstesQuartil, punkte.ZweitesQuartil, punkte.DrittesQuartil, punkte.Max);
+			
+			pktMax = std::max(pktMax, punkte.Max);
+			
+			const auto& outlierPunkte = encoding->gegnerOutlierPunkte();
+			outlierPunktePlot->addData(index3, outlierPunkte.first.Min, outlierPunkte.first.ErstesQuartil, outlierPunkte.first.ZweitesQuartil, outlierPunkte.first.DrittesQuartil, outlierPunkte.first.Max, outlierPunkte.second);
+			nurOutlierPktPlot->addData(index1, outlierPunkte.first.Min, outlierPunkte.first.ErstesQuartil, outlierPunkte.first.ZweitesQuartil, outlierPunkte.first.DrittesQuartil, outlierPunkte.first.Max, outlierPunkte.second);
+			
+			const auto& idle = encoding->gegnerIdle();
+			idlePlot->addData(index1, idle.Min, idle.ErstesQuartil, idle.ZweitesQuartil, idle.DrittesQuartil, idle.Max);
+			
+			idleMax = std::max(idleMax, idle.Max);
+			
+			const auto& outlierIdle = encoding->gegnerOutlierIdle();
+			outlierIdlePlot->addData(index1, outlierIdle.first.Min, outlierIdle.first.ErstesQuartil, outlierIdle.first.ZweitesQuartil, outlierIdle.first.DrittesQuartil, outlierIdle.first.Max, outlierIdle.second);
+		} //if ( encoding->gegnerPunkte().Max )
 	} //for ( auto iter = Encodings.begin(); iter != Encodings.end(); ++iter )
 	
 	for ( auto& graph : pktGraphen ) {
