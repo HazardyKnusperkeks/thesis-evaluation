@@ -290,14 +290,14 @@ static inline QDataStream& operator>>(QDataStream& in, Produkt& produkt) {
 template<typename T>
 struct AvgSequenz {
 	std::vector<T> Sequenz;
-	T Summe;
-	T Min;
-	T Max;
-	double Avg;
-	double StdAbw;
-	double ErstesQuartil;
-	double ZweitesQuartil;
-	double DrittesQuartil;
+	T Summe = 0;
+	T Min = 0;
+	T Max = 0;
+	double Avg = 0;
+	double StdAbw = 0;
+	double ErstesQuartil = 0;
+	double ZweitesQuartil = 0;
+	double DrittesQuartil = 0;
 	
 	void calc(void) noexcept {
 		if ( Sequenz.empty() ) {
@@ -309,7 +309,7 @@ struct AvgSequenz {
 		
 		Summe  = std::accumulate(Sequenz.cbegin(), Sequenz.cend(), T{0});
 		Min    = std::accumulate(Sequenz.cbegin(), Sequenz.cend(), std::numeric_limits<T>::max(), static_cast<const T&(*)(const T&, const T&)>(std::min));
-		Max    = std::accumulate(Sequenz.cbegin(), Sequenz.cend(), std::numeric_limits<T>::min(), static_cast<const T&(*)(const T&, const T&)>(std::max));
+		Max    = std::accumulate(Sequenz.cbegin(), Sequenz.cend(), std::numeric_limits<T>::lowest(), static_cast<const T&(*)(const T&, const T&)>(std::max));
 		Avg    = static_cast<double>(Summe) / Sequenz.size();
 		StdAbw = std::sqrt(avgSquare - Avg * Avg);
 		
