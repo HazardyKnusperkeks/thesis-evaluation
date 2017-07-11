@@ -5,9 +5,13 @@
 #include <iomanip>
 #include <tuple>
 
+#if __has_include(<string_view>)
+#include <string_view>
+#else
 namespace std {
 	using experimental::string_view;
 }
+#endif
 
 constexpr int stringViewToInt(const std::string_view& view) noexcept {
 	int ret = 0;
